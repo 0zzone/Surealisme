@@ -9,10 +9,8 @@ int main(){
 	int size;
 	char** file = read_file("mots.txt", &size);
 
-	char** test;
 	for(int i=0; i<size; i++){
-		printf("%s",get_split_space(file[i])[1]);
-		printf("\n");
+		printf("%s \n",get_split_space(file[i])[1]);
 	}
 
 	return 0;
@@ -29,6 +27,11 @@ void display_file(char** file, int size){
 char** get_split_space(char* line){
 	int size = strlen(line);
 	char** tab = (char**) malloc(sizeof(char*) * 3);
+
+	for(int p=0; p<3; p++){
+		tab[p] = NULL;
+	}
+
 	int change = 0;
 	int index = 0;
 	for(int i=0; i<size; i++){
