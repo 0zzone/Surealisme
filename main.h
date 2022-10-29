@@ -11,7 +11,7 @@ typedef struct {
 	char* word;
 	char* baseword;
 	char** cara;
-}flechie;
+} flechie;
 
 
 typedef struct node {
@@ -28,6 +28,10 @@ char** get_split_carac(char*); // This function retutns an array of the differen
 
 void display_struct(flechie);
 void display_carac(char**);
+
+node* create_node(char);
+p_node init_tree();
+void edit_tree(p_node tree, char* line);
 
 
 #endif

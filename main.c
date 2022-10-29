@@ -3,7 +3,10 @@
 #define SIZE 10
 
 int main(){
-	node** tree_adj = NULL, **tree_nom = NULL, **tree_ver = NULL, **tree_adv = NULL;
+	p_node tree_adj = init_tree(), 
+	tree_nom = init_tree(), 
+	tree_ver = init_tree(), 
+	tree_adv = init_tree();
 	
 	int size;
 	char* baseword;
@@ -97,6 +100,40 @@ char** get_split_carac(char* ensemble){
 
 
 
+node* create_node(char letter) {
+	p_node pn = (p_node) malloc(sizeof(node));
+	pn->alphabet = (p_node*) malloc(sizeof(p_node) * 26);
+	for (int i=0; i<26; ++i) pn->alphabet[i] = NULL;
+	pn->letter = letter;
+	pn->number = 0;
+	pn->tab = NULL;
+	return pn;
+}
+
+p_node init_tree() {
+	p_node tree = create_node(0);
+	return tree;
+}
+
+void edit_tree(p_node tree, char* line) {
+	if (tree == NULL) tree = init_tree();
+
+	flechie f = get_split(line);
+
+	char* word = f.baseword;
+	int size = strlen(word);
+	p_node ptr = tree;
+	for (int i = 0; i < size - 1; i++) {
+		int index = word[i] - 'a';
+		if (ptr->alphabet[index] == NULL) {
+			ptr->alphabet[index] = create_node(word[i]);
+		}
+		ptr = ptr->alphabet[index];
+	}
+	ptr->number++;
+	ptr->tab = realloc(ptr->tab, ptr->number);
+	ptr->tab[ptr->number - 1] = &f;
+}
 
 
 
