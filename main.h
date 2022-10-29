@@ -20,7 +20,6 @@ typedef struct node {
 	int number;
 	struct node** alphabet;
 } node, *p_node;
-
 typedef struct {
 	p_node tree_adj; 
 	p_node tree_nom;
@@ -39,6 +38,7 @@ void display_carac(char**);
 node* create_node(char);
 p_node init_tree();
 void edit_tree(trees, char* line);
+
 
 
 #endif

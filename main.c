@@ -3,6 +3,8 @@
 
 #define SIZE 10
 
+#define SIZE 10
+
 int main(){
 	trees T;
 	T.tree_adj = init_tree();
@@ -13,6 +15,7 @@ int main(){
 	int size;
 	char* baseword;
 	char** file = read_file("mots.txt", &size);
+
 
 	for (int i=0; i < size; ++i) {
 		edit_tree(T, file[i]);
@@ -142,6 +145,11 @@ void edit_tree(trees T, char* line) {
 	ptr->tab = realloc(ptr->tab, ptr->number);
 	ptr->tab[ptr->number - 1] = &f;
 }
+
+
+
+
+
 
 
 
