@@ -1,16 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "main.h"
-#include "file.h"
 
 int main(){
+	node** tree_adj = NULL, **tree_nom = NULL, **tree_ver = NULL, **tree_adv = NULL;
 	
 	int size;
+	char* baseword;
 	char** file = read_file("mots.txt", &size);
 
 	for(int i=0; i<size; i++){
-		printf("%s \n",get_split_space(file[i])[1]);
+		printf("%s \n",get_split_space(file[i], baseword)[1]);
 	}
 
 	return 0;
@@ -24,25 +22,29 @@ void display_file(char** file, int size){
 }
 
 
-char** get_split_space(char* line){
+flechie get_split_space(const char* line, char* baseword){
 	int size = strlen(line);
-	char** tab = (char**) malloc(sizeof(char*) * 3);
-
-	for(int p=0; p<3; p++){
-		tab[p] = NULL;
-	}
+	flechie f = {NULL, NULL};
 
 	int change = 0;
 	int index = 0;
 	for(int i=0; i<size; i++){
 		if(line[i] != '\t'){
-			if(tab[change] == NULL){
-				tab[change] = (char*) malloc(sizeof(char));
+			switch (change) {
+				case 1:
+					if(f.word == NULL) f.word = (char*) malloc(sizeof(char));
+					else f.word = realloc(f.word, index+1);
+					f.word[index] = line[i];
+					break;
+				case 2:
+					if(baseword == NULL) baseword = (char*) malloc(sizeof(char));
+					else baseword = realloc(baseword, index+1);
+					baseword[index] = line[i];
+					break;
+				case 3:
+					// la fonction de découpage des caractéristiques
+					break;
 			}
-			else{
-				tab[change] = realloc(tab[change], index+1);
-			}
-			tab[change][index] = line[i];
 			index++;
 		}
 		else{
@@ -50,5 +52,5 @@ char** get_split_space(char* line){
 			index = 0;
 		}
 	}
-	return tab;
+	return f;
 }
