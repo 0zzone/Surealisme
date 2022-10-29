@@ -1,16 +1,26 @@
 #include "main.h"
+#include "file.h"
+
+#define SIZE 10
 
 #define SIZE 10
 
 int main(){
-	node** tree_adj = NULL, **tree_nom = NULL, **tree_ver = NULL, **tree_adv = NULL;
+	trees T;
+	T.tree_adj = init_tree();
+	T.tree_adv = init_tree();
+	T.tree_nom = init_tree();
+	T.tree_ver = init_tree();
 	
 	int size;
 	char* baseword;
 	char** file = read_file("mots.txt", &size);
 
-	flechie f = get_split(file[0]);
-	display_struct(f);
+
+	for (int i=0; i < size; ++i) {
+		edit_tree(T, file[i]);
+	}
+	// printf("%c ", T.tree_nom->letter);
 
 	return 0;
 }
@@ -94,6 +104,49 @@ char** get_split_carac(char* ensemble){
 	return tab;
 
 }
+
+
+
+node* create_node(char letter) {
+	p_node pn = (p_node) malloc(sizeof(node));
+	pn->alphabet = (p_node*) malloc(sizeof(p_node) * 26);
+	for (int i=0; i<26; ++i) pn->alphabet[i] = NULL;
+	pn->letter = letter;
+	pn->number = 0;
+	pn->tab = NULL;
+	return pn;
+}
+
+p_node init_tree() {
+	p_node tree = create_node(0);
+	return tree;
+}
+
+void edit_tree(trees T, char* line) {
+	flechie f = get_split(line);
+
+	p_node tree = NULL;
+	if (f.cara[0] == "Nom") tree = T.tree_nom;
+	else if (f.cara[0] == "Ver") tree = T.tree_ver;
+	else if (f.cara[0] == "Adj") tree = T.tree_adj;
+	else tree = T.tree_adv;
+
+	char* word = f.baseword;
+	int size = strlen(word);
+	p_node ptr = tree;
+	for (int i = 0; i < size - 1; i++) {
+		int index = word[i] - 'a';
+		if (ptr->alphabet[index] == NULL) {
+			ptr->alphabet[index] = create_node(word[i]);
+		}
+		ptr = ptr->alphabet[index];
+	}
+	ptr->number++;
+	ptr->tab = realloc(ptr->tab, ptr->number);
+	ptr->tab[ptr->number - 1] = &f;
+}
+
+
 
 
 

@@ -11,7 +11,7 @@ typedef struct {
 	char* word;
 	char* baseword;
 	char** cara;
-}flechie;
+} flechie;
 
 
 typedef struct node {
@@ -20,6 +20,12 @@ typedef struct node {
 	int number;
 	struct node** alphabet;
 } node, *p_node;
+typedef struct {
+	p_node tree_adj; 
+	p_node tree_nom;
+	p_node tree_ver; 
+	p_node tree_adv;
+} trees;
 
 
 void display_file(char**, int); // This function displays the loaded file
@@ -28,6 +34,11 @@ char** get_split_carac(char*); // This function retutns an array of the differen
 
 void display_struct(flechie);
 void display_carac(char**);
+
+node* create_node(char);
+p_node init_tree();
+void edit_tree(trees, char* line);
+
 
 
 #endif
