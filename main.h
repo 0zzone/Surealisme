@@ -9,23 +9,25 @@
 
 typedef struct {
 	char* word;
+	char* baseword;
 	char** cara;
 }flechie;
 
-typedef struct {
-	flechie** tab;
-	int number;
-}tab_flechies;
 
 typedef struct node {
 	char letter;
-	tab_flechies* flechies;
+	flechie** tab;
+	int number;
 	struct node** alphabet;
-} *p_node;
+} node, *p_node;
 
 
 void display_file(char**, int); // This function displays the loaded file
-flechie get_split_space(const char*, char*); // This function returns an array of [flechies, base, params]
+flechie get_split(char*); // This function returns an array of [flechies, base, params]
+char** get_split_carac(char*); // This function retutns an array of the different caracteristics of a word
+
+void display_struct(flechie);
+void display_carac(char**);
 
 
 #endif
