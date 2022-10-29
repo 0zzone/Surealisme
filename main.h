@@ -21,6 +21,13 @@ typedef struct node {
 	struct node** alphabet;
 } node, *p_node;
 
+typedef struct {
+	p_node tree_adj; 
+	p_node tree_nom;
+	p_node tree_ver; 
+	p_node tree_adv;
+} trees;
+
 
 void display_file(char**, int); // This function displays the loaded file
 flechie get_split(char*); // This function returns an array of [flechies, base, params]
@@ -31,7 +38,7 @@ void display_carac(char**);
 
 node* create_node(char);
 p_node init_tree();
-void edit_tree(p_node tree, char* line);
+void edit_tree(trees, char* line);
 
 
 #endif
