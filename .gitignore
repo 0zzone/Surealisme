@@ -4,3 +4,4 @@ Prog
 .vscode/
 cmake-build-debug/
 Prog.exe
+build/

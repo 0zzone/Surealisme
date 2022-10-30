@@ -126,10 +126,7 @@ void edit_tree(trees T, char* line) {
 	flechie f = get_split(line);
 
 	p_node tree = NULL;
-	if (f.cara[0] == "Nom") tree = T.tree_nom;
-	else if (f.cara[0] == "Ver") tree = T.tree_ver;
-	else if (f.cara[0] == "Adj") tree = T.tree_adj;
-	else tree = T.tree_adv;
+	 tree = T.tree_adv;
 
 	char* word = f.baseword;
 	int size = strlen(word);
