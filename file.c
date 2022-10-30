@@ -11,7 +11,6 @@ char** read_file(char* fileName, int* tot){
 	for(int l=0; l<LINE; l++){
 		line[l] = (char*) malloc(sizeof(char)*COL);
 	}
-	char fname[20];
     FILE *fptr = NULL; 
     int i = 0;
     *tot = 0;
