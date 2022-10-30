@@ -20,7 +20,7 @@ typedef struct s_node {
 	char letter;
 	flechie **tab;
 	int n_flechies;
-	struct node **alphabet;
+	struct s_node **alphabet;
 } node, *p_node;
 
 typedef struct s_trees {
