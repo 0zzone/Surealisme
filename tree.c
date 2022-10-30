@@ -1,5 +1,37 @@
 #include "tree.h"
 
+void free_tree(p_node tree) {
+	if (tree == NULL) return;
+	if (tree->alphabet != NULL) {
+		for (int i=0; i<26; ++i) if (tree->alphabet[i] != NULL) free_tree(tree->alphabet[i]);
+		free(tree->alphabet);
+	}
+	for (int flechi=0; flechi<tree->n_flechies; ++flechi) {
+		flechie* temp = tree->tab[flechi];
+		free(temp->baseword);
+		free(temp->word);
+		if (temp->tab_cara != NULL){
+			for (int cara=0; cara < temp->n_cara; ++cara) free(temp->tab_cara[cara]);
+			free(temp->tab_cara);
+		}
+		free(temp);
+	}
+	free(tree->tab);
+	free(tree);
+	tree = NULL;
+}
+
+void free_all(trees T) {
+	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * 4);
+	tab_t[0] = T.tree_adj;
+	tab_t[1] = T.tree_nom; 
+	tab_t[2] = T.tree_ver; 
+	tab_t[3] = T.tree_adv;
+
+	for (int i=0; i<4; ++i) free_tree(tab_t[i]);
+	free(tab_t);
+}
+
 void display_carac(char** c){
 	for(int i=0; i<SIZE; i++){
 		printf("%s ", c[i]);

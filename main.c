@@ -14,11 +14,15 @@ int main(){
 	char** file = read_file("mots.txt", &size);
 
 	for (int i=0; i < size; ++i) edit_tree(T, file[i]);
-
+	
 	int taille = 0;
 	p_node* res = search_word(T, "stabiliser", &taille);
 	
 	printf("%s\n", res[0]->tab[0]->word);
+
+	free_file(file, size);
+	free(res);
+	free_all(T);
 
 	return 0;
 }
