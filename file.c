@@ -24,3 +24,9 @@ char** read_file(char* fileName, int* tot){
     *tot = i;
     return line;
 }
+
+void display_file(char** file, int size){
+	for(int i=0; i<size; i++){
+		printf("%s\n", file[i]);
+	}
+}
