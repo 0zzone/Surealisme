@@ -39,6 +39,6 @@ node* create_node(char);
 p_node init_tree();
 void edit_tree(trees, char* line);
 
-
+p_node search_word(char* search);
 
 #endif
