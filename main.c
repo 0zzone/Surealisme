@@ -32,7 +32,6 @@ int main(){
 
 	printf("%s\n", res[0]->tab[0]->baseword);
 
-
 	return 0;
 }
 
