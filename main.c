@@ -4,8 +4,6 @@
 
 #define SIZE 10
 
-#define SIZE 10
-
 int main(){
 	trees T;
 	T.tree_adj = init_tree();
@@ -14,7 +12,6 @@ int main(){
 	T.tree_ver = init_tree();
 	
 	int size;
-	char* baseword;
 	char** file = read_file("mots.txt", &size);
 
 
@@ -32,11 +29,8 @@ int main(){
 	int taille = 0;
 	p_node* res = search_word(T, "stabilisant", &taille);
 	
-	for(int k=0; k<taille; k++){
-		for(int p=0; p<res[k]->number; p++){
-			printf("%s\n", res[k]->tab[p]->baseword);
-		}
-	}
+
+	printf("%s\n", res[0]->tab[0]->baseword);
 
 	return 0;
 }
@@ -66,23 +60,19 @@ flechie get_split(char* line){
 	char** tab = (char**) malloc(sizeof(char*) * 3);
 
 	for(int p=0; p<3; p++){
-		tab[p] = NULL;
+		tab[p] = (char*) malloc(sizeof(char));
+		tab[p][0] = '\0';
 	}
 
 	int change = 0;
 	int index = 0;
 	for(int i=0; i<size; i++){
-		if(line[i] != '\t'){
-			if(tab[change] == NULL){
-				tab[change] = (char*) malloc(sizeof(char));
-			}
-			else{
-				tab[change] = realloc(tab[change], index+1);
-			}
+		if(line[i] != '\t') {
 			tab[change][index] = line[i];
+			tab[change] = realloc(tab[change], index+1);
+			tab[change][index + 1] = '\0';
 			index++;
-		}
-		else{
+		} else {
 			change++;
 			index = 0;
 		}
@@ -107,14 +97,15 @@ char** get_split_carac(char* ensemble){
 
 	int change = 0;
 	int index = 0;
-	for(int k=0; k<strlen(ensemble); k++){
+	int length = strlen(ensemble);
+	for(int k=0; k<length; k++){
 		if(ensemble[k] == ':' || ensemble[k] == '+'){
 			change++;
 			index = 0;
 		}
 		else{
 			tab[change][index] = ensemble[k];
-					index++;
+			index++;
 		}
 	}
 	return tab;
@@ -147,36 +138,34 @@ void edit_tree(trees T, char* line) {
 	else if (strcmp(f.cara[0],"Adj")==0) tree = T.tree_adj;
 	else tree = T.tree_adv;
 
-	char* word = f.baseword;
-	int size = strlen(word);
+	int size = strlen(f.baseword);
 	p_node ptr = tree;
 	for (int i = 0; i < size; i++) {
-		int index = word[i] - 'a';
-		if (ptr->alphabet[index] == NULL) {
-			ptr->alphabet[index] = create_node(word[i]);
-		}
+		int index = f.baseword[i] - 'a';
+		if (ptr->alphabet[index] == NULL) ptr->alphabet[index] = create_node(f.baseword[i]);
 		ptr = ptr->alphabet[index];
 	}
 	ptr->number++;
-	ptr->tab = realloc(ptr->tab, ptr->number);
+	if (ptr->tab == NULL) ptr->tab = malloc(sizeof(flechie*));
+	else ptr->tab = (flechie**) realloc(ptr->tab, ptr->number);
 	ptr->tab[ptr->number - 1] = &f;
 }
 
 p_node* search_word(trees T, char* search, int* size) {
+	int length = strlen(search);
 	*size = 0;
-	p_node tab_t[4];
-	tab_t[0] = T.tree_adj, 
-	tab_t[1] = T.tree_nom, 
-	tab_t[2] = T.tree_ver, 
+	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * 4);
+	tab_t[0] = T.tree_adj;
+	tab_t[1] = T.tree_nom; 
+	tab_t[2] = T.tree_ver; 
 	tab_t[3] = T.tree_adv;
 
 	p_node* res = NULL;
 	p_node ptr;
-	int found;
 	for (int i_tree=0; i_tree<4; i_tree++) {
-		found = 1;
+		int found = 1;
 		ptr = tab_t[i_tree];
-		for (int depth=0; depth<strlen(search); depth++) {
+		for (int depth=0; depth<length; depth++) {
 			ptr = ptr->alphabet[search[depth] - 'a'];
 			if (ptr == NULL) {
 				found = 0;
@@ -186,7 +175,7 @@ p_node* search_word(trees T, char* search, int* size) {
 		if(found == 1){
 			(*size)++;
 			if(res == NULL){
-				res = (p_node*) malloc(sizeof(p_node) * (*size));
+				res = (p_node*) malloc(sizeof(p_node));
 			}
 			else{
 				res = realloc(res, *size);
