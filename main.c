@@ -126,7 +126,10 @@ void edit_tree(trees T, char* line) {
 	flechie f = get_split(line);
 
 	p_node tree = NULL;
-	 tree = T.tree_adv;
+	if (f.cara[0] == "Nom") tree = T.tree_nom;
+	else if (f.cara[0] == "Ver") tree = T.tree_ver;
+	else if (f.cara[0] == "Adj") tree = T.tree_adj;
+	else tree = T.tree_adv;
 
 	char* word = f.baseword;
 	int size = strlen(word);
@@ -143,6 +146,31 @@ void edit_tree(trees T, char* line) {
 	ptr->tab[ptr->number - 1] = &f;
 }
 
+p_node* search_word(trees T, char* search) {
+	p_node tab_t[4];
+	tab_t[0] = T.tree_adj, 
+	tab_t[1] = T.tree_nom, 
+	tab_t[2] = T.tree_ver, 
+	tab_t[3] = T.tree_adv;
+
+	p_node* res[4];
+	if 
+	p_node ptr = tab_t[0];
+	for (int i_tree=0; i_tree<4; ++i_tree) {
+		ptr = tab_t[i_tree];
+		int found = 1;
+		for (int depth=0; depth<strlen(search); depth++) {
+			ptr = ptr->alphabet[search[depth] - 'a'];
+			if (ptr == NULL) {
+				found = 0;
+				break;
+			}
+		}
+		if (found) res[i_tree] = ptr;
+	}
+
+	return res;
+}
 
 
 
