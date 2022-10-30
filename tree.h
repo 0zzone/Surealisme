@@ -9,22 +9,21 @@
 
 #define SIZE 10
 
-
-typedef struct {
-	char* word;
-	char* baseword;
-	char** cara;
+typedef struct s_flechie {
+	char *word;
+	char *baseword;
+	char **tab_cara;
+	int n_cara;
 } flechie;
 
-
-typedef struct node {
+typedef struct s_node {
 	char letter;
-	flechie** tab;
-	int number;
-	struct node** alphabet;
+	flechie **tab;
+	int n_flechies;
+	struct node **alphabet;
 } node, *p_node;
 
-typedef struct {
+typedef struct s_trees {
 	p_node tree_adj; 
 	p_node tree_nom;
 	p_node tree_ver; 
@@ -32,8 +31,8 @@ typedef struct {
 } trees;
 
 
-flechie get_split(char*); // This function returns an array of [flechies, base, params]
-char** get_split_carac(char*); // This function retutns an array of the different caracteristics of a word
+flechie *get_split(char*); // This function returns an array of [flechies, base, params]
+char** get_split_carac(char*, int*); // This function retutns an array of the different caracteristics of a word
 
 void display_struct(flechie);
 void display_carac(char**);

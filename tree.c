@@ -9,11 +9,12 @@ void display_carac(char** c){
 void display_struct(flechie f){
 	printf("Mot de base : %s\n", f.baseword);
 	printf("Mot fléchi : %s\n", f.word);
-	display_carac(f.cara);
+	display_carac(f.tab_cara);
 }
 
 
-flechie get_split(char* line){
+flechie* get_split(char* line){
+	if (line[0] == '\0') return NULL;
 	int size = strlen(line);
 	char** tab = (char**) malloc(sizeof(char*) * 3);
 
@@ -22,24 +23,29 @@ flechie get_split(char* line){
 		tab[p][0] = '\0';
 	}
 
-	int change = 0;
-	int index = 0;
+	int change = 0, index = 0;
 	for(int i=0; i<size; i++){
 		if(line[i] != '\t') {
-			tab[change][index] = line[i];
-			tab[change] = realloc(tab[change], index+1);
-			tab[change][index + 1] = '\0';
 			index++;
+			char* temp = realloc(tab[change], index+1);
+			if (temp == NULL) printf("bug l31");
+			else tab[change] = temp;
+			tab[change][index-1] = line[i];
+			tab[change][index] = '\0';
+
 		} else {
 			change++;
 			index = 0;
 		}
 	}
 
-	flechie f;
-	f.word = tab[0];
-	f.baseword = tab[1];
-	f.cara = get_split_carac(tab[2]);
+	flechie* f = malloc(sizeof(flechie));
+	f->word = tab[0];
+	f->baseword = tab[1];
+	f->tab_cara = get_split_carac(tab[2], &f->n_cara);
+
+	free(tab[2]);
+    free(tab);
 
 	return f;
 
@@ -47,25 +53,36 @@ flechie get_split(char* line){
 }
 
 
-char** get_split_carac(char* ensemble){
-	char** tab = (char**) malloc(sizeof(char*) * SIZE);
-	for(int i=0; i<SIZE; i++){
-		tab[i] = (char*) malloc(sizeof(char) * 5);
-	}
+char** get_split_carac(char* set_char, int* n_tab){
+	if (strlen(set_char) == 0) return NULL;
+	char** tab = (char**) malloc(sizeof(char*));
+	tab[0] = (char*) malloc(sizeof(char));
+	tab[0][0] = '\0';
 
 	int change = 0;
 	int index = 0;
-	int length = strlen(ensemble);
+	int length = strlen(set_char);
 	for(int k=0; k<length; k++){
-		if(ensemble[k] == ':' || ensemble[k] == '+'){
+		if(set_char[k] == ':' || set_char[k] == '+'){
 			change++;
+			char** temp = (char**) realloc(tab, sizeof(char*) * (change + 1));
+			if (temp == NULL) printf("error get_split_carac\n");
+			else tab = temp;
+			
+			tab[change] = (char*) malloc(sizeof(char));
+			tab[change][0] = '\0';
 			index = 0;
 		}
-		else{
-			tab[change][index] = ensemble[k];
+		else {
 			index++;
+			char* temp = realloc(tab[change], sizeof(char) * (index + 1));
+			if (temp == NULL) printf("error get_split_carac\n");
+			else tab[change] = temp;
+			tab[change][index-1] = set_char[k];
+			tab[change][index] = '\0';
 		}
 	}
+	*n_tab = change + 1;
 	return tab;
 
 }
@@ -77,7 +94,7 @@ node* create_node(char letter) {
 	pn->alphabet = (p_node*) malloc(sizeof(p_node) * 26);
 	for (int i=0; i<26; ++i) pn->alphabet[i] = NULL;
 	pn->letter = letter;
-	pn->number = 0;
+	pn->n_flechies = 0;
 	pn->tab = NULL;
 	return pn;
 }
@@ -88,31 +105,34 @@ p_node init_tree() {
 }
 
 void edit_tree(trees T, char* line) {
-	flechie f = get_split(line);
+	flechie* pf = get_split(line);
+	if (pf == NULL) return;
 
-	p_node tree = NULL;
-	if (strcmp(f.cara[0],"Nom") == 0) tree = T.tree_nom;
-	else if (strcmp(f.cara[0],"Ver")==0) tree = T.tree_ver;
-	else if (strcmp(f.cara[0],"Adj")==0) tree = T.tree_adj;
-	else tree = T.tree_adv;
+	p_node ptr = NULL;
+	if (strcmp(pf->tab_cara[0], "Nom") == 0) ptr = T.tree_nom;
+	else if (strcmp(pf->tab_cara[0], "Ver") == 0) ptr = T.tree_ver;
+	else if (strcmp(pf->tab_cara[0], "Adj") == 0) ptr = T.tree_adj;
+	else ptr = T.tree_adv;
 
-	int size = strlen(f.baseword);
-	p_node ptr = tree;
+	int size = strlen(pf->baseword);
 	for (int i = 0; i < size; i++) {
-		int index = f.baseword[i] - 'a';
-		if (ptr->alphabet[index] == NULL) ptr->alphabet[index] = create_node(f.baseword[i]);
+		int index = pf->baseword[i] - 'a';
+		if (ptr->alphabet[index] == NULL) ptr->alphabet[index] = create_node(pf->baseword[i]);
 		ptr = ptr->alphabet[index];
 	}
-	ptr->number++;
-	if (ptr->tab == NULL) ptr->tab = malloc(sizeof(flechie*));
-	else ptr->tab = (flechie**) realloc(ptr->tab, ptr->number);
-	ptr->tab[ptr->number - 1] = &f;
+	ptr->n_flechies++;
+	flechie** temp = (flechie**) realloc(ptr->tab, ptr->n_flechies * sizeof(flechie*));
+	if (temp == NULL) printf("error l146");
+	else ptr->tab = temp;
+	
+	ptr->tab[ptr->n_flechies - 1] = pf;
 }
 
 p_node* search_word(trees T, char* search, int* size) {
 	int length = strlen(search);
 	*size = 0;
 	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * 4);
+
 	tab_t[0] = T.tree_adj;
 	tab_t[1] = T.tree_nom; 
 	tab_t[2] = T.tree_ver; 
@@ -130,17 +150,15 @@ p_node* search_word(trees T, char* search, int* size) {
 				break;
 			}
 		}
-		if(found == 1){
+		if (found == 1) {
 			(*size)++;
-			if(res == NULL){
-				res = (p_node*) malloc(sizeof(p_node));
-			}
-			else{
-				res = realloc(res, *size);
-			}
+			if(res == NULL) res = (p_node*) malloc(sizeof(p_node));
+			else res = realloc(res, *size);
 			res[*size - 1] = ptr;
 		}
 	}
+
+	free(tab_t);
 
 	return res;
 }
