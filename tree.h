@@ -31,6 +31,7 @@ typedef struct s_trees {
 } trees;
 
 void free_all(trees T);
+p_node sample_tree();
 flechie *get_split(char*); // This function returns an array of [flechies, base, params]
 char** get_split_carac(char*, int*); // This function retutns an array of the different caracteristics of a word
 

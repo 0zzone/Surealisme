@@ -44,6 +44,38 @@ void display_struct(flechie f){
 	display_carac(f.tab_cara);
 }
 
+p_node sample_tree() {
+	p_node stree = create_node(0);
+	stree->alphabet[0] = create_node('a');
+	p_node temp = stree->alphabet[0];
+	temp->n_flechies = 1;
+	temp->tab = malloc(sizeof(flechie*));
+	temp->tab[0]->word = malloc(sizeof(char) * 5);
+	temp->tab[0]->word = "aaab";
+	temp->tab[0]->baseword = malloc(sizeof(char) * 3);
+	temp->tab[0]->baseword = "aa";
+	temp->tab[0]->tab_cara = malloc(sizeof(char*) * 4);
+	temp->tab[0]->tab_cara = get_split_carac("Ver:aaaa:b:cc", &temp->tab[0]->n_cara);
+
+	temp->alphabet[0] = create_node('a');
+	temp = temp->alphabet[0];
+	temp->n_flechies = 2;
+	temp->tab = malloc(sizeof(flechie*) * 2);
+	temp->tab[0]->word = malloc(sizeof(char) * 5);
+	temp->tab[0]->word = "aaab";
+	temp->tab[0]->baseword = malloc(sizeof(char) * 3);
+	temp->tab[0]->baseword = "aa";
+	temp->tab[0]->tab_cara = malloc(sizeof(char*) * 4);
+	temp->tab[0]->tab_cara = get_split_carac("Ver:aaaa:b:cc", &temp->tab[0]->n_cara);
+	temp->tab[1]->word = malloc(sizeof(char) * 3);
+	temp->tab[1]->word = "ab";
+	temp->tab[1]->baseword = malloc(sizeof(char) * 6);
+	temp->tab[1]->baseword = "aabbc";
+	temp->tab[1]->tab_cara = malloc(sizeof(char*) * 3);
+	temp->tab[1]->tab_cara = get_split_carac("Nom:b:cc", &temp->tab[1]->n_cara);
+
+	return stree;
+}
 
 flechie* get_split(char* line){
 	if (line[0] == '\0') return NULL;
