@@ -30,3 +30,8 @@ void display_file(char** file, int size){
 		printf("%s\n", file[i]);
 	}
 }
+
+void free_file(char** file, int length) {
+    for (int i=0; i<LINE; i++) free(file[i]);
+    free(file);
+}
