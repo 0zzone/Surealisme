@@ -1,11 +1,14 @@
-#ifndef _HEADER_MAIN_
-#define _HEADER_MAIN_
+#ifndef _HEADER_TREE_
+#define _HEADER_TREE_
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "file.h"
+
+#define SIZE 10
+
 
 typedef struct {
 	char* word;
@@ -29,7 +32,6 @@ typedef struct {
 } trees;
 
 
-void display_file(char**, int); // This function displays the loaded file
 flechie get_split(char*); // This function returns an array of [flechies, base, params]
 char** get_split_carac(char*); // This function retutns an array of the different caracteristics of a word
 
