@@ -1,5 +1,6 @@
 #include "main.h"
 #include "file.h"
+#include <string.h>
 
 #define SIZE 10
 
@@ -20,7 +21,22 @@ int main(){
 	for (int i=0; i < size; ++i) {
 		edit_tree(T, file[i]);
 	}
-	// printf("%c ", T.tree_nom->letter);
+	
+	// char mot[12] = "stabilimetre";
+	// p_node ptr = T.tree_nom;
+	// for(int i=0; i<12; i++){
+	// 	printf("%c", ptr->alphabet[mot[i] - 'a']->letter);
+	// 	ptr = ptr->alphabet[mot[i] - 'a'];
+	// }
+
+	int taille = 0;
+	p_node* res = search_word(T, "stabilisant", &taille);
+	
+	for(int k=0; k<taille; k++){
+		for(int p=0; p<res[k]->number; p++){
+			printf("%s\n", res[k]->tab[p]->baseword);
+		}
+	}
 
 	return 0;
 }
@@ -126,15 +142,15 @@ void edit_tree(trees T, char* line) {
 	flechie f = get_split(line);
 
 	p_node tree = NULL;
-	if (f.cara[0] == "Nom") tree = T.tree_nom;
-	else if (f.cara[0] == "Ver") tree = T.tree_ver;
-	else if (f.cara[0] == "Adj") tree = T.tree_adj;
+	if (strcmp(f.cara[0],"Nom") == 0) tree = T.tree_nom;
+	else if (strcmp(f.cara[0],"Ver")==0) tree = T.tree_ver;
+	else if (strcmp(f.cara[0],"Adj")==0) tree = T.tree_adj;
 	else tree = T.tree_adv;
 
 	char* word = f.baseword;
 	int size = strlen(word);
 	p_node ptr = tree;
-	for (int i = 0; i < size - 1; i++) {
+	for (int i = 0; i < size; i++) {
 		int index = word[i] - 'a';
 		if (ptr->alphabet[index] == NULL) {
 			ptr->alphabet[index] = create_node(word[i]);
@@ -146,19 +162,20 @@ void edit_tree(trees T, char* line) {
 	ptr->tab[ptr->number - 1] = &f;
 }
 
-p_node* search_word(trees T, char* search) {
+p_node* search_word(trees T, char* search, int* size) {
+	*size = 0;
 	p_node tab_t[4];
 	tab_t[0] = T.tree_adj, 
 	tab_t[1] = T.tree_nom, 
 	tab_t[2] = T.tree_ver, 
 	tab_t[3] = T.tree_adv;
 
-	p_node* res[4];
-	if 
-	p_node ptr = tab_t[0];
-	for (int i_tree=0; i_tree<4; ++i_tree) {
+	p_node* res = NULL;
+	p_node ptr;
+	int found;
+	for (int i_tree=0; i_tree<4; i_tree++) {
+		found = 1;
 		ptr = tab_t[i_tree];
-		int found = 1;
 		for (int depth=0; depth<strlen(search); depth++) {
 			ptr = ptr->alphabet[search[depth] - 'a'];
 			if (ptr == NULL) {
@@ -166,7 +183,16 @@ p_node* search_word(trees T, char* search) {
 				break;
 			}
 		}
-		if (found) res[i_tree] = ptr;
+		if(found == 1){
+			(*size)++;
+			if(res == NULL){
+				res = (p_node*) malloc(sizeof(p_node) * (*size));
+			}
+			else{
+				res = realloc(res, *size);
+			}
+			res[*size - 1] = ptr;
+		}
 	}
 
 	return res;
