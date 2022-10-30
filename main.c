@@ -14,7 +14,6 @@ int main(){
 	char** file = read_file("mots.txt", &size);
 
 	for (int i=0; i < size; ++i) edit_tree(T, file[i]);
-	
 	int taille = 0;
 	p_node* res = search_word(T, "stabiliser", &taille);
 	

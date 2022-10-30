@@ -92,7 +92,7 @@ flechie* get_split(char* line){
 		if(line[i] != '\t') {
 			index++;
 			char* temp = realloc(tab[change], index+1);
-			if (temp == NULL) printf("bug l31");
+			if (temp == NULL) printf("bug get_split");
 			else tab[change] = temp;
 			tab[change][index-1] = line[i];
 			tab[change][index] = '\0';
