@@ -226,3 +226,32 @@ p_node* search_word(trees T, char* search, int* size) {
 
 	return res;
 }
+
+int is_alphabet_empty(p_node* alphabet) {
+	for (int i=0; i<26; ++i) {
+		if (alphabet[i] != NULL) return 1;
+	}
+	return 0;
+}
+
+p_node random_word(tree t) {
+	if (t == NULL) return NULL;
+	// arbre supposé non nul
+
+	p_node temp = t;
+	int a = 0, r = 0, found = 0;
+	while (found == 0) {
+		r = rand() % 26;
+		while (temp->alphabet[r] == NULL) {
+			r = rand() % 26;
+		}
+		temp = temp->alphabet[r];
+		if (temp->n_flechies > 0) {
+			a = rand() % 2;
+			if (a == 0 || (a == 1 && is_alphabet_empty(temp->alphabet) == 0)) found = 1;
+			// a == 1 et is_alp == 1 => found = 0
+		}
+	}
+
+	return temp;
+}

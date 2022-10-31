@@ -23,11 +23,13 @@ typedef struct s_node {
 	struct s_node **alphabet;
 } node, *p_node;
 
+typedef p_node tree;
+
 typedef struct s_trees {
-	p_node tree_adj;
-	p_node tree_nom;
-	p_node tree_ver;
-	p_node tree_adv;
+	tree tree_adj;
+	tree tree_nom;
+	tree tree_ver;
+	tree tree_adv;
 } trees;
 
 void free_all(trees T);
@@ -43,5 +45,7 @@ p_node init_tree();
 void edit_tree(trees, char* line);
 
 p_node* search_word(trees, char*, int*);
+p_node random_word(tree t);
+int is_alphabet_empty(p_node* alphabet);
 
 #endif
