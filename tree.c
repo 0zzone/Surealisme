@@ -249,7 +249,6 @@ p_node random_word(tree t) {
 		if (temp->n_flechies > 0) {
 			a = rand() % 2;
 			if (a == 0 || (a == 1 && is_alphabet_empty(temp->alphabet) == 0)) found = 1;
-			// a == 1 et is_alp == 1 => found = 0
 		}
 	}
 

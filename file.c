@@ -3,7 +3,7 @@
 #include <string.h> 
 #include "file.h"
 
-#define LINE 100
+#define LINE 10
 #define COL 50 
  
 char** read_file(char* fileName, int* tot){
