@@ -302,8 +302,9 @@ char* find_flechie_tg(p_node pn, int type, int genre) {
 	char* tab_type[] = {"Mas", "Fem", "InvGen"};
 	char* tab_genre[] = {"SG", "PL"};
 	flechie** tab = pn->tab;
+	
 	for (int i=0; i < pn->n_flechies; ++i) {
-		for (int i_cara=0; i_cara < 1 + (int) tab[i]->n_cara / 2; ++i_cara) {
+		for (int i_cara=0; i_cara < (int) tab[i]->n_cara / 2; ++i_cara) {
 			if ((strcmp(tab[i]->tab_cara[i_cara * 2 + 1], tab_type[type]) == 0 ||
 			type == 2) 
 			&& strcmp(tab[i]->tab_cara[i_cara * 2 + 2], tab_genre[genre]) == 0) {
@@ -316,6 +317,7 @@ char* find_flechie_tg(p_node pn, int type, int genre) {
 
 char* generate_base(trees T) {
 	// à continuer avec genrate_node
+	return NULL;
 }
 
 char* generate_flechie(trees T, int* size, p_node* nodes){
@@ -330,12 +332,12 @@ char* generate_flechie(trees T, int* size, p_node* nodes){
 			(*size)++;
 			res = realloc(res, sizeof(char*) * (*size));
 			char* temp = find_flechie_tg(rnd_pro, type, number);
-			if (temp == NULL) printf("missing flechie form for %s")
+			if (temp == NULL) printf("missing flechie form for %s");
 		}
 		// à continuer 
 
 		index++;
 	}
-
+	return NULL;
 	return res;
 }

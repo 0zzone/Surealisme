@@ -16,15 +16,16 @@ int main(){
 	T.tree_pre = init_tree();
 	
 	int size;
-	char** file = read_file("dictionnaire_non_accentue.txt", &size);
+	char** file = read_file("mots.txt", &size);
 
 	for (int i=0; i < size; ++i) edit_tree(T, file[i]);
 
 	int t = 0;
-	char** phrase = generate_non_flechies(T, &t);
-	for(int i=0; i<t; i++){
-		printf("%s ", phrase[i]);
-	}
+	// char** phrase = generate_non_flechies(T, &t);
+	// for(int i=0; i<t; i++){
+	// 	printf("%s ", phrase[i]);
+	// }
+	printf("%s ", find_flechie_tg(search_word(T, "stabilisant", &t)[0], 0, 1));
 
 	free_file(file);
 	free_all(T);
