@@ -37,10 +37,10 @@ int main(){
 	// printf("%s\n", res->tab[0]->baseword);
 
 	int t = 0;
-	p_node* res = search_word(T, "stabiliser", &t);
-	printf("%d\n", res[1]->n_flechies);
+	// p_node* res = search_word(T, "stabiliser", &t);
+	// printf("%d\n", res[0]->n_flechies);
 
-	free_file(file, size);
+	free_file(file);
 	free_all(T);
 
 	return 0;

@@ -3,6 +3,6 @@
 
 char** read_file(char*, int*);
 void display_file(char**, int); // This function displays the loaded file
-void free_file(char**, int);
+void free_file(char**);
 
 #endif

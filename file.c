@@ -3,8 +3,8 @@
 #include <string.h> 
 #include "file.h"
 
-#define LINE 10
-#define COL 50 
+#define LINE 300000
+#define COL 100 
  
 char** read_file(char* fileName, int* tot){
 	char** line = (char**) malloc(sizeof(char*)*LINE);
@@ -31,7 +31,7 @@ void display_file(char** file, int size){
 	}
 }
 
-void free_file(char** file, int length) {
+void free_file(char** file) {
     for (int i=0; i<LINE; i++) free(file[i]);
     free(file);
 }
