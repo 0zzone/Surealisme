@@ -269,54 +269,73 @@ p_node random_word(tree t) {
 	return temp;
 }
 
-
-char** generate_non_flechies(trees T, int* t){
+p_node* generate_nodes(trees T, int* size) {
 	int model = rand() % 2;
-	model = 1;
-	int l;
-	p_node temp;
-	int index = 0;
-	char** res;
+	int l = 0, index = 0;
+	p_node* res = NULL;
 	if(model == 0){
 		l = 4;
-		res = (char**) malloc(sizeof(char*) * l);
+		res = (p_node*) malloc(sizeof(p_node*) * l);
 
-		res[index] = random_word(T.tree_nom)->tab[0]->baseword;
-		index++;
-
-		res[index] = random_word(T.tree_adj)->tab[0]->baseword;
-		index++;
-
-		res[index] = random_word(T.tree_ver)->tab[0]->baseword;
-		index++;
-
-		res[index] = random_word(T.tree_nom)->tab[0]->baseword;
+		res[index++] = random_word(T.tree_nom);
+		res[index++] = random_word(T.tree_adj);
+		res[index++] = random_word(T.tree_ver);
+		res[index++] = random_word(T.tree_nom);
 	}
 	else{
 		l=6;
-		res = (char**) malloc(sizeof(char*) * l);
+		res = (p_node*) malloc(sizeof(p_node) * l);
 
-		res[index] = random_word(T.tree_nom)->tab[0]->baseword;
-		index++;
-
-		char* impose = (char*) malloc(sizeof(char) * 3);
-		strcpy(impose, "qui");
-		res[index] = impose;
-		index++;
-
-		res[index] = random_word(T.tree_ver)->tab[0]->baseword;
-		index++;
-
-		res[index] = random_word(T.tree_ver)->tab[0]->baseword;
-		index++;
-
-		res[index] = random_word(T.tree_nom)->tab[0]->baseword;
-		index++;
-
-		res[index] = random_word(T.tree_adj)->tab[0]->baseword;
-
+		res[index++] = random_word(T.tree_nom);
+		res[index++] = search_word(T, "qui", NULL)[0];
+		res[index++] = random_word(T.tree_ver);
+		res[index++] = random_word(T.tree_ver);
+		res[index++] = random_word(T.tree_nom);
+		res[index++] = random_word(T.tree_adj);
 	}
-	*t = index + 1;
+	*size = index;
 	return res;
+}
 
+char* find_flechie_tg(p_node pn, int type, int genre) {
+	// model: [Nom, Mas, SG, Fem, PL]
+	char* tab_type[] = {"Mas", "Fem", "InvGen"};
+	char* tab_genre[] = {"SG", "PL"};
+	flechie** tab = pn->tab;
+	for (int i=0; i < pn->n_flechies; ++i) {
+		for (int i_cara=0; i_cara < 1 + (int) tab[i]->n_cara / 2; ++i_cara) {
+			if ((strcmp(tab[i]->tab_cara[i_cara * 2 + 1], tab_type[type]) == 0 ||
+			type == 2) 
+			&& strcmp(tab[i]->tab_cara[i_cara * 2 + 2], tab_genre[genre]) == 0) {
+				return tab[i]->word;
+			}
+		}
+	}
+	return NULL;
+}
+
+char* generate_base(trees T) {
+	// à continuer avec genrate_node
+}
+
+char* generate_flechie(trees T, int* size, p_node* nodes){
+	int l = 0, index = 0;
+	char** res = malloc(sizeof(char*) * (*size));
+	for (int i=0; i<(*size); ++i) {
+		if (strcmp(nodes[i]->tab[0]->tab_cara[0], "Nom") == 0) {
+			p_node rnd_pro = random_word(T.tree_pro);
+			int type = rand() % 3,
+			number = rand() % 2;
+
+			(*size)++;
+			res = realloc(res, sizeof(char*) * (*size));
+			char* temp = find_flechie_tg(rnd_pro, type, number);
+			if (temp == NULL) printf("missing flechie form for %s")
+		}
+		// à continuer 
+
+		index++;
+	}
+
+	return res;
 }

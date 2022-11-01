@@ -59,6 +59,8 @@ p_node* search_word(trees, char*, int*);
 p_node random_word(tree t);
 int is_alphabet_empty(p_node* alphabet);
 
-char** generate_non_flechies(trees, int*);
+p_node* generate_node(trees, int*);
+char** generate_base(trees, int*);
+char** generate_flechie(trees, int*);
 
 #endif
