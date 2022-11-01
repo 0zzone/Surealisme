@@ -37,8 +37,8 @@ int main(){
 	// printf("%s\n", res->tab[0]->baseword);
 
 	int t = 0;
-	// p_node* res = search_word(T, "stabiliser", &t);
-	// printf("%d\n", res[0]->n_flechies);
+	p_node* res = search_word(T, "stabiliser", &t);
+	printf("%d\n", t);
 
 	free_file(file);
 	free_all(T);

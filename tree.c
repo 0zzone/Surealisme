@@ -168,26 +168,26 @@ p_node init_tree() {
 	return tree;
 }
 
-int get_index(char prompt) {
-	switch (prompt) {
-		case '-':
-			return 26;
-		case 'é':
-			return 'e' - 'a';
-		case 'ê':
-			return 'e' - 'a';
-		case 'è':
-			return 'e' - 'a';
-		case 'ë':
-			return 'e' - 'a';
-		case 'à':
-			return 0;
-		case 'ù':
-			return 'u' - 'a';
-		default:
-			return prompt - 'a';
-	}
-}
+// int get_index(char prompt) {
+// 	switch (prompt) {
+// 		case '-':
+// 			return 26;
+// 		case 'é':
+// 			return 'e' - 'a';
+// 		case 'ê':
+// 			return 'e' - 'a';
+// 		case 'è':
+// 			return 'e' - 'a';
+// 		case 'ë':
+// 			return 'e' - 'a';
+// 		case 'à':
+// 			return 0;
+// 		case 'ù':
+// 			return 'u' - 'a';
+// 		default:
+// 			return prompt - 'a';
+// 	}
+// }
 
 void edit_tree(trees T, char* line) {
 	flechie* pf = get_split(line);
