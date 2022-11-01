@@ -176,13 +176,14 @@ void edit_tree(trees T, char* line) {
 	if (strcmp(pf->tab_cara[0], "Nom") == 0) ptr = T.tree_nom;
 	else if (strcmp(pf->tab_cara[0], "Ver") == 0) ptr = T.tree_ver;
 	else if (strcmp(pf->tab_cara[0], "Adj") == 0) ptr = T.tree_adj;
-	else ptr = T.tree_adv;
+	else if (strcmp(pf->tab_cara[0], "Adv") == 0) ptr = T.tree_adv;
+	else return;
 
 	int size = strlen(pf->baseword);
 	for (int i = 0; i < size; i++) {
 		int index = pf->baseword[i] - 'a';
 		if (ptr->alphabet[index] == NULL) ptr->alphabet[index] = create_node(pf->baseword[i]);
-		ptr = ptr->alphabet[index];
+		ptr = ptr->alphabet[index];	
 	}
 	ptr->n_flechies++;
 	flechie** temp = (flechie**) realloc(ptr->tab, ptr->n_flechies * sizeof(flechie*));
