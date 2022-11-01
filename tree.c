@@ -170,9 +170,11 @@ p_node init_tree() {
 
 int get_index(char prompt) {
 	if (prompt == '-') return 26;
-	else if (prompt == 'é' || prompt == 'ê' || prompt == 'ë') return 'e' - 'a';
-	else if (prompt == 'à') return 0;
-	else if (prompt == 'ù') return 'u' - 'a';
+	if (prompt == '\'') return 27;
+	if (prompt == 'é' || prompt == 'ê' || prompt == 'ë') return 'e' - 'a';
+	if (prompt == 'à') return 0;
+	if (prompt == 'ù') return 'u' - 'a';
+	if (prompt == 'ö') return 'o' - 'a';
 	return prompt - 'a';
 }
 
