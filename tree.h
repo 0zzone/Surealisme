@@ -30,7 +30,17 @@ typedef struct s_trees {
 	tree tree_nom;
 	tree tree_ver;
 	tree tree_adv;
+	tree tree_pro;
+	tree tree_pre;
+	tree tree_det;
 } trees;
+
+typedef struct {
+	char p[10];
+	int genre; // 1: Masculin 0:Féminin 2: Non binaire
+	int nombre; // 0: singulier 1:Pluriel
+} pronom;
+
 
 void free_all(trees T);
 p_node sample_tree();
@@ -48,5 +58,7 @@ void edit_tree(trees T, char* line);
 p_node* search_word(trees, char*, int*);
 p_node random_word(tree t);
 int is_alphabet_empty(p_node* alphabet);
+
+char** generate_non_flechies(trees, int*);
 
 #endif

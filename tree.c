@@ -198,6 +198,9 @@ void edit_tree(trees T, char* line) {
 	else if (strcmp(pf->tab_cara[0], "Ver") == 0) ptr = T.tree_ver;
 	else if (strcmp(pf->tab_cara[0], "Adj") == 0) ptr = T.tree_adj;
 	else if (strcmp(pf->tab_cara[0], "Adv") == 0) ptr = T.tree_adv;
+	else if(strcmp(pf->tab_cara[0], "Pro") == 0) ptr = T.tree_pro;
+	else if(strcmp(pf->tab_cara[0], "Det") == 0) ptr = T.tree_det;
+	else if(strcmp(pf->tab_cara[0], "Pre") == 0) ptr = T.tree_pre;
 	else return;
 
 	int size = strlen(pf->baseword);
@@ -275,4 +278,56 @@ p_node random_word(tree t) {
 	}
 
 	return temp;
+}
+
+
+char** generate_non_flechies(trees T, int* t){
+	int model = rand() % 2;
+	model = 1;
+	int l;
+	p_node temp;
+	int index = 0;
+	char** res;
+	if(model == 0){
+		l = 4;
+		res = (char**) malloc(sizeof(char*) * l);
+
+		res[index] = random_word(T.tree_nom)->tab[0]->baseword;
+		index++;
+
+		res[index] = random_word(T.tree_adj)->tab[0]->baseword;
+		index++;
+
+		res[index] = random_word(T.tree_ver)->tab[0]->baseword;
+		index++;
+
+		res[index] = random_word(T.tree_nom)->tab[0]->baseword;
+	}
+	else{
+		l=6;
+		res = (char**) malloc(sizeof(char*) * l);
+
+		res[index] = random_word(T.tree_nom)->tab[0]->baseword;
+		index++;
+
+		char* impose = (char*) malloc(sizeof(char) * 3);
+		strcpy(impose, "qui");
+		res[index] = impose;
+		index++;
+
+		res[index] = random_word(T.tree_ver)->tab[0]->baseword;
+		index++;
+
+		res[index] = random_word(T.tree_ver)->tab[0]->baseword;
+		index++;
+
+		res[index] = random_word(T.tree_nom)->tab[0]->baseword;
+		index++;
+
+		res[index] = random_word(T.tree_adj)->tab[0]->baseword;
+
+	}
+	*t = index + 1;
+	return res;
+
 }
