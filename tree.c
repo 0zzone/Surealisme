@@ -155,8 +155,8 @@ char** get_split_carac(char* set_char, int* n_tab){
 
 node* create_node(char letter) {
 	p_node pn = (p_node) malloc(sizeof(node));
-	pn->alphabet = (p_node*) malloc(sizeof(p_node) * 26);
-	for (int i=0; i<26; ++i) pn->alphabet[i] = NULL;
+	pn->alphabet = (p_node*) malloc(sizeof(p_node) * 28);
+	for (int i=0; i<28; ++i) pn->alphabet[i] = NULL;
 	pn->letter = letter;
 	pn->n_flechies = 0;
 	pn->tab = NULL;
@@ -168,11 +168,12 @@ p_node init_tree() {
 	return tree;
 }
 
+// remplacer les chars spéciaux par leur code 
 int get_index(char prompt) {
 	if (prompt == '-') return 26;
 	if (prompt == '\'') return 27;
-	if (prompt == 'é' || prompt == 'ê' || prompt == 'ë') return 'e' - 'a';
-	if (prompt == 'à') return 0;
+	if (prompt == 'é' || prompt == 'è' || prompt == 'ë') return 'e' - 'a';
+	if (prompt == '\303') return 0;
 	if (prompt == 'ù') return 'u' - 'a';
 	if (prompt == 'ö') return 'o' - 'a';
 	return prompt - 'a';
@@ -187,14 +188,14 @@ void edit_tree(trees T, char* line) {
 	else if (strcmp(pf->tab_cara[0], "Ver") == 0) ptr = T.tree_ver;
 	else if (strcmp(pf->tab_cara[0], "Adj") == 0) ptr = T.tree_adj;
 	else if (strcmp(pf->tab_cara[0], "Adv") == 0) ptr = T.tree_adv;
-	else if(strcmp(pf->tab_cara[0], "Pro") == 0) ptr = T.tree_pro;
-	else if(strcmp(pf->tab_cara[0], "Det") == 0) ptr = T.tree_det;
-	else if(strcmp(pf->tab_cara[0], "Pre") == 0) ptr = T.tree_pre;
+	else if (strcmp(pf->tab_cara[0], "Pro") == 0) ptr = T.tree_pro;
+	else if (strcmp(pf->tab_cara[0], "Det") == 0) ptr = T.tree_det;
+	else if (strcmp(pf->tab_cara[0], "Pre") == 0) ptr = T.tree_pre;
 	else return;
 
 	int size = strlen(pf->baseword);
 	for (int i = 0; i < size; i++) {
-		int index = pf->baseword[i] - 'a';
+		int index = get_index(pf->baseword[i]);
 		if (ptr->alphabet[index] == NULL) ptr->alphabet[index] = create_node(pf->baseword[i]);
 		ptr = ptr->alphabet[index];	
 	}
@@ -207,8 +208,8 @@ void edit_tree(trees T, char* line) {
 }
 
 p_node* search_word(trees T, char* search, int* size) {
+	int temp_size = 0;
 	int length = strlen(search);
-	*size = 0;
 	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * 4);
 
 	tab_t[0] = T.tree_adj;
@@ -222,21 +223,22 @@ p_node* search_word(trees T, char* search, int* size) {
 		int found = 1;
 		ptr = tab_t[i_tree];
 		for (int depth=0; depth<length; depth++) {
-			ptr = ptr->alphabet[search[depth] - 'a'];
+			ptr = ptr->alphabet[get_index(search[depth])];
 			if (ptr == NULL) {
 				found = 0;
 				break;
 			}
 		}
 		if (found == 1) {
-			(*size)++;
+			(temp_size)++;
 			if(res == NULL) res = (p_node*) malloc(sizeof(p_node));
-			else res = realloc(res, *size);
-			res[*size - 1] = ptr;
+			else res = realloc(res, temp_size);
+			res[temp_size - 1] = ptr;
 		}
 	}
 
 	free(tab_t);
+	if (size != NULL) *size = temp_size;
 
 	return res;
 }
@@ -305,9 +307,12 @@ char* find_flechie_tg(p_node pn, int type, int genre) {
 	
 	for (int i=0; i < pn->n_flechies; ++i) {
 		for (int i_cara=0; i_cara < (int) tab[i]->n_cara / 2; ++i_cara) {
-			if ((strcmp(tab[i]->tab_cara[i_cara * 2 + 1], tab_type[type]) == 0 ||
-			type == 2) 
-			&& strcmp(tab[i]->tab_cara[i_cara * 2 + 2], tab_genre[genre]) == 0) {
+			int cond_type = (strcmp(tab[i]->tab_cara[i_cara * 2 + 1], tab_type[type]) == 0 ||
+			strcmp(tab[i]->tab_cara[i_cara * 2 + 1], tab_type[2]) == 0);
+			int cond_genre = strcmp(tab[i]->tab_cara[i_cara * 2 + 2], tab_genre[genre]) == 0 ||
+			strcmp(tab[i]->tab_cara[i_cara * 2 + 2], tab_genre[2]) == 0;
+
+			if (cond_type && cond_genre) {
 				return tab[i]->word;
 			}
 		}
@@ -315,29 +320,114 @@ char* find_flechie_tg(p_node pn, int type, int genre) {
 	return NULL;
 }
 
-char* generate_base(trees T) {
-	// à continuer avec genrate_node
+char* find_flechie_verb(p_node pn, int genre, int pers) {
+	// models: [Ver:PPre] | [Ver:IImp+SG+P1:IImp+SG+P2]
+	char* tab_genre[] = {"SG", "PL", "InvPL"};
+	char* tab_pers[] = {"P1", "P2", "P3"};
+	flechie** tab = pn->tab;
+	
+	for (int i=0; i < pn->n_flechies; ++i) {
+		for (int i_cara=0; i_cara < (int) tab[i]->n_cara / 3; ++i_cara) {
+			int cond_genre = (strcmp(tab[i]->tab_cara[(i_cara * 3 + 1) + 1], tab_genre[genre]) == 0 || strcmp(tab[i]->tab_cara[(i_cara * 3 + 1) + 1], tab_genre[2]) == 0);
+			int cond_pers = strcmp(tab[i]->tab_cara[(i_cara * 3 + 2) + 1], tab_pers[pers]) == 0;
+
+			if (cond_genre && cond_pers) return tab[i]->word;
+		}
+	}
 	return NULL;
 }
 
-char* generate_flechie(trees T, int* size, p_node* nodes){
-	int l = 0, index = 0;
-	char** res = malloc(sizeof(char*) * (*size));
-	for (int i=0; i<(*size); ++i) {
-		if (strcmp(nodes[i]->tab[0]->tab_cara[0], "Nom") == 0) {
-			p_node rnd_pro = random_word(T.tree_pro);
-			int type = rand() % 3,
-			number = rand() % 2;
+char* generate_base(trees T) {
+	int size_tnode = 0;
+	p_node* nodes = generate_nodes(T, &size_tnode);
+	int index = 0;
+	int size_fl = size_tnode;
+	char** tab_flechies = malloc(sizeof(char*) * size_fl);
 
-			(*size)++;
-			res = realloc(res, sizeof(char*) * (*size));
-			char* temp = find_flechie_tg(rnd_pro, type, number);
-			if (temp == NULL) printf("missing flechie form for %s");
+	for (int i=0; i<size_tnode; ++i) tab_flechies[i] = nodes[i]->tab[0]->baseword;
+
+	char* res = NULL;
+	int size_res = 0;
+	for (int i=0; i<size_fl; ++i) {
+		if (tab_flechies[i] == NULL) continue;
+
+		res = realloc(res, size_res + strlen(tab_flechies[i]) + 1);
+		for (int j=0; j < (int) strlen(tab_flechies[i]); ++j) res[j + size_res] = tab_flechies[i][j];
+		res[size_res + strlen(tab_flechies[i]) - 1] = ' ';
+		res[size_res + strlen(tab_flechies[i])] = '\0';
+		size_res += strlen(tab_flechies[i]);
+	}
+	free(tab_flechies);
+	free(nodes);
+	return res;
+}
+
+
+char* generate_flechie(trees T){
+	int size_tnode = 0;
+	p_node* nodes = generate_nodes(T, &size_tnode);
+	int index = 0;
+	int size_fl = size_tnode;
+	char** tab_flechies = malloc(sizeof(char*) * size_fl);
+
+	int type, number;
+
+	for (int i=0; i<size_tnode; ++i) {
+		if (strcmp(nodes[i]->tab[0]->tab_cara[0], "Nom") == 0) {
+			p_node rnd_det = random_word(T.tree_det);
+
+			type = rand() % 3, number = rand() % 2;
+			size_fl++;
+
+			// déterminant
+			tab_flechies = realloc(tab_flechies, sizeof(char*) * size_fl);
+			char* temp = find_flechie_tg(rnd_det, type, number);
+			if (temp == NULL) {
+				printf("missing flechie form for det %s with type %d and genre %d\n", nodes[i]->tab[0]->baseword, type, number);
+				}
+			tab_flechies[index++] = temp;
+
+			// nom
+			temp = find_flechie_tg(nodes[i], type, number);
+			if (temp == NULL) {
+				printf("missing flechie form for nom %s with type %d and genre %d\n", nodes[i]->tab[0]->baseword, type, number);
+			}
+			tab_flechies[index] = temp;
+			
 		}
-		// à continuer 
+		else if (strcmp(nodes[i]->tab[0]->tab_cara[0], "Adj") == 0) {
+				char* temp = find_flechie_tg(nodes[i], type, number);
+				if (temp == NULL) {
+					printf("missing flechie form for adj %s with type %d and genre %d\n", nodes[i]->tab[0]->baseword, type, number);
+				}
+				tab_flechies[index] = temp;
+			}
+		else if (strcmp(nodes[i]->tab[0]->tab_cara[0], "Ver") == 0) {
+			char* temp = find_flechie_verb(nodes[i], number, 2);
+			if (temp == NULL) {
+				printf("missing flechie form for ver %s with number %d and pers 3\n", nodes[i]->tab[0]->baseword, number);
+			}
+			tab_flechies[index] = temp;
+		}
+		else { // préposition ou pronom
+			tab_flechies[index] = nodes[i]->tab[0]->word;
+		}
+		}
 
 		index++;
+	
+	char* res = NULL;
+	int size_res = 0;
+	for (int i=0; i<size_fl; ++i) {
+		if (tab_flechies[i] == NULL) continue;
+
+		res = realloc(res, size_res + strlen(tab_flechies[i] + 1));
+		for (int j=0; j < (int) strlen(tab_flechies[i]); ++j) res[j + size_res] = tab_flechies[i][j];
+		res[size_res + strlen(tab_flechies[i])] = ' ';
+		res[size_res + strlen(tab_flechies[i]) + 1] = '\0';
+		size_res += strlen(tab_flechies[i]);
 	}
-	return NULL;
+	free(tab_flechies);
+	free(nodes);
 	return res;
 }

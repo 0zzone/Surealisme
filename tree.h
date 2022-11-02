@@ -62,6 +62,6 @@ int is_alphabet_empty(p_node* alphabet);
 p_node* generate_nodes(trees T, int* size);
 char* find_flechie_tg(p_node pn, int type, int genre);
 char* generate_base(trees T);
-char* generate_flechie(trees T, int* size, p_node* nodes);
+char* generate_flechie(trees T);
 
 #endif
