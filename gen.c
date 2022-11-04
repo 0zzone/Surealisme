@@ -33,10 +33,10 @@ p_node* generate_nodes(trees T, int* size) {
 	return res;
 }
 
-char* find_flechie_tg(p_node pn, int type, int genre) {
+char* find_flechie_typegenre(p_node pn, int type, int genre) {
 	// model: [Nom, Mas, SG, Fem, PL]
 	char* tab_type[] = {"Mas", "Fem", "InvGen"};
-	char* tab_genre[] = {"SG", "PL"};
+	char* tab_genre[] = {"SG", "PL", "InvPL"};
 	flechie** tab = pn->tab;
 	
 	for (int i=0; i < pn->n_flechies; ++i) {
@@ -54,7 +54,7 @@ char* find_flechie_tg(p_node pn, int type, int genre) {
 	return NULL;
 }
 
-char* find_flechie_verb(p_node pn, int genre, int pers) {
+char* find_flechie_verb(p_node pn, char temps, int genre, int pers) {
 	// models: [Ver:PPre] | [Ver:IImp+SG+P1:IImp+SG+P2]
 	char* tab_genre[] = {"SG", "PL", "InvPL"};
 	char* tab_pers[] = {"P1", "P2", "P3"};
@@ -62,10 +62,11 @@ char* find_flechie_verb(p_node pn, int genre, int pers) {
 	
 	for (int i=0; i < pn->n_flechies; ++i) {
 		for (int i_cara=0; i_cara < (int) tab[i]->n_cara / 3; ++i_cara) {
-			int cond_genre = (strcmp(tab[i]->tab_cara[(i_cara * 3 + 1) + 1], tab_genre[genre]) == 0 || strcmp(tab[i]->tab_cara[(i_cara * 3 + 1) + 1], tab_genre[2]) == 0);
+			int cond_temps = (tab[i]->tab_cara[(i_cara * 3) + 1])[0] == temps;
+            int cond_genre = (strcmp(tab[i]->tab_cara[(i_cara * 3 + 1) + 1], tab_genre[genre]) == 0 || strcmp(tab[i]->tab_cara[(i_cara * 3 + 1) + 1], tab_genre[2]) == 0);
 			int cond_pers = strcmp(tab[i]->tab_cara[(i_cara * 3 + 2) + 1], tab_pers[pers]) == 0;
 
-			if (cond_genre && cond_pers) return tab[i]->word;
+			if (cond_temps && cond_genre && cond_pers) return tab[i]->word;
 		}
 	}
 	return NULL;
@@ -108,60 +109,77 @@ char* generate_flechie(trees T){
 	int type, number;
 
 	for (int i=0; i<size_tnode; ++i) {
+        char* temp = NULL;
 		if (strcmp(nodes[i]->tab[0]->tab_cara[0], "Nom") == 0) {
 			p_node rnd_det = random_word(T.tree_det);
 
-			type = rand() % 3, number = rand() % 2;
+			type = rand() % 2, number = rand() % 2;
 			size_fl++;
 
 			// déterminant
 			tab_flechies = realloc(tab_flechies, sizeof(char*) * size_fl);
-			char* temp = find_flechie_tg(rnd_det, type, number);
-			if (temp == NULL) {
+            
+            do {
+                temp = find_flechie_typegenre(rnd_det, type, number);
+			    if (temp == NULL) {
 				printf("missing flechie form for det %s with type %d and genre %d\n", nodes[i]->tab[0]->baseword, type, number);
-				}
+                rnd_det = random_word(T.tree_det);
+                }
+            } while (temp == NULL);
 			tab_flechies[index++] = temp;
 
 			// nom
-			temp = find_flechie_tg(nodes[i], type, number);
-			if (temp == NULL) {
-				printf("missing flechie form for nom %s with type %d and genre %d\n", nodes[i]->tab[0]->baseword, type, number);
-			}
+            do {
+			    temp = find_flechie_typegenre(nodes[i], type, number);
+			    if (temp == NULL) {
+				    printf("missing flechie form for nom %s with type %d and genre %d\n", nodes[i]->tab[0]->baseword, type, number);
+                    nodes[i] = random_word(T.tree_nom);
+                }
+            } while (temp == NULL);
 			tab_flechies[index] = temp;
 			
 		}
 		else if (strcmp(nodes[i]->tab[0]->tab_cara[0], "Adj") == 0) {
-				char* temp = find_flechie_tg(nodes[i], type, number);
+            do {
+				temp = find_flechie_typegenre(nodes[i], type, number);
 				if (temp == NULL) {
 					printf("missing flechie form for adj %s with type %d and genre %d\n", nodes[i]->tab[0]->baseword, type, number);
-				}
+                    nodes[i] = random_word(T.tree_adj);
+                }} while (temp == NULL);
 				tab_flechies[index] = temp;
-			}
+			
+        }
 		else if (strcmp(nodes[i]->tab[0]->tab_cara[0], "Ver") == 0) {
-			char* temp = find_flechie_verb(nodes[i], number, 2);
-			if (temp == NULL) {
-				printf("missing flechie form for ver %s with number %d and pers 3\n", nodes[i]->tab[0]->baseword, number);
-			}
-			tab_flechies[index] = temp;
+            do {
+			    temp = find_flechie_verb(nodes[i], 'I', number, 2);
+			    if (temp == NULL) {
+			    	printf("missing flechie form for ver %s with time I, number %d and pers 2\n", nodes[i]->tab[0]->baseword, number);
+                    nodes[i] = random_word(T.tree_ver);
+			    }} while (temp == NULL);
+			    tab_flechies[index] = temp;
+            
 		}
 		else { // préposition ou pronom
 			tab_flechies[index] = nodes[i]->tab[0]->word;
 		}
-		}
+    index++;
+    }
 
-		index++;
+		
 	
 	char* res = NULL;
 	int size_res = 0;
 	for (int i=0; i<size_fl; ++i) {
 		if (tab_flechies[i] == NULL) continue;
+        int taille = strlen(tab_flechies[i]);
 
-		res = realloc(res, size_res + strlen(tab_flechies[i] + 1));
-		for (int j=0; j < (int) strlen(tab_flechies[i]); ++j) res[j + size_res] = tab_flechies[i][j];
-		res[size_res + strlen(tab_flechies[i])] = ' ';
-		res[size_res + strlen(tab_flechies[i]) + 1] = '\0';
-		size_res += strlen(tab_flechies[i]);
+		res = realloc(res, size_res + taille + 2); // include space and null char
+		for (int j=0; j < taille; ++j) res[size_res + j] = tab_flechies[i][j];
+		res[size_res + taille] = ' ';
+		res[size_res + taille + 1] = '\0';
+		size_res += taille + 1; // include space char 
 	}
+    res[size_res - 1] = '\0';
 	free(tab_flechies);
 	free(nodes);
 	return res;

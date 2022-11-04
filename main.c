@@ -23,7 +23,7 @@ int main(){
 
 	for (int i=0; i < size; ++i) edit_tree(T, file[i]);
 
-	char* phrase = generate_base(T);
+	char* phrase = generate_flechie(T);
 	printf("%s ", phrase);
 
 	free_file(file);
