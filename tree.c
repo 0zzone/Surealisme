@@ -168,14 +168,16 @@ p_node init_tree() {
 	return tree;
 }
 
-// remplacer les chars spéciaux par leur code 
 int get_index(char prompt) {
 	if (prompt == '-') return 26;
 	if (prompt == '\'') return 27;
-	if (prompt == 'é' || prompt == 'è' || prompt == 'ë') return 'e' - 'a';
-	if (prompt == '\303') return 0;
-	if (prompt == 'ù') return 'u' - 'a';
-	if (prompt == 'ö') return 'o' - 'a';
+	/*
+	if (prompt == '\351' || prompt == '\350' || prompt == '\352' || prompt == '\353') return 'e' - 'a';
+	if (prompt == '\340') return 0;
+	if (prompt == '\371') return 'u' - 'a';
+	if (prompt == '\366') return 'o' - 'a';
+	if (prompt == '\357') return 'i' - 'a';
+	*/
 	return prompt - 'a';
 }
 
@@ -245,9 +247,9 @@ p_node* search_word(trees T, char* search, int* size) {
 
 int is_alphabet_empty(p_node* alphabet) {
 	for (int i=0; i<26; ++i) {
-		if (alphabet[i] != NULL) return 1;
+		if (alphabet[i] != NULL) return 0;
 	}
-	return 0;
+	return 1;
 }
 
 p_node random_word(tree t) {
@@ -264,7 +266,7 @@ p_node random_word(tree t) {
 		temp = temp->alphabet[r];
 		if (temp->n_flechies > 0) {
 			a = rand() % 2;
-			if (a == 0 || (a == 1 && is_alphabet_empty(temp->alphabet) == 0)) found = 1;
+			if (a == 0 || (a == 1 && is_alphabet_empty(temp->alphabet) == 1)) found = 1;
 		}
 	}
 
