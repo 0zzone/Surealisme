@@ -18,7 +18,12 @@ p_node* generate_nodes(trees T, int* size) {
 		res = (p_node*) malloc(sizeof(p_node) * l);
 
 		res[index++] = random_word(T.tree_nom);
-		res[index++] = search_word(T, "qui", NULL)[0];
+        p_node* temp = search_word(T, "qui", NULL);
+        if (temp == NULL) {
+            printf("cannot find the word 'qui'\n");
+            res[index++] = NULL;
+        }
+		else res[index++] = search_word(T, "qui", NULL)[0];
 		res[index++] = random_word(T.tree_ver);
 		res[index++] = random_word(T.tree_ver);
 		res[index++] = random_word(T.tree_nom);
@@ -69,23 +74,24 @@ char* find_flechie_verb(p_node pn, int genre, int pers) {
 char* generate_base(trees T) {
 	int size_tnode = 0;
 	p_node* nodes = generate_nodes(T, &size_tnode);
-	int index = 0;
 	int size_fl = size_tnode;
 	char** tab_flechies = malloc(sizeof(char*) * size_fl);
 
-	for (int i=0; i<size_tnode; ++i) tab_flechies[i] = nodes[i]->tab[0]->baseword;
+	for (int i=0; i<size_tnode; ++i) if (nodes[i] != NULL) tab_flechies[i] = nodes[i]->tab[0]->baseword;
 
 	char* res = NULL;
 	int size_res = 0;
 	for (int i=0; i<size_fl; ++i) {
 		if (tab_flechies[i] == NULL) continue;
+        int taille = strlen(tab_flechies[i]);
 
-		res = realloc(res, size_res + strlen(tab_flechies[i]) + 1);
-		for (int j=0; j < (int) strlen(tab_flechies[i]); ++j) res[j + size_res] = tab_flechies[i][j];
-		res[size_res + strlen(tab_flechies[i]) - 1] = ' ';
-		res[size_res + strlen(tab_flechies[i])] = '\0';
-		size_res += strlen(tab_flechies[i]);
+		res = realloc(res, size_res + taille + 2); // include space and null char
+		for (int j=0; j < taille; ++j) res[size_res + j] = tab_flechies[i][j];
+		res[size_res + taille] = ' ';
+		res[size_res + taille + 1] = '\0';
+		size_res += taille + 1; // include space char 
 	}
+    res[size_res - 1] = '\0';
 	free(tab_flechies);
 	free(nodes);
 	return res;

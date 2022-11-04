@@ -3,7 +3,7 @@
 void free_tree(p_node tree) {
 	if (tree == NULL) return;
 	if (tree->alphabet != NULL) {
-		for (int i=0; i<26; ++i) if (tree->alphabet[i] != NULL) free_tree(tree->alphabet[i]);
+		for (int i=0; i<28; ++i) if (tree->alphabet[i] != NULL) free_tree(tree->alphabet[i]);
 		free(tree->alphabet);
 	}
 	for (int flechi=0; flechi<tree->n_flechies; ++flechi) {
@@ -78,7 +78,7 @@ p_node sample_tree() {
 }
 
 flechie* get_split(char* line){
-	if (line[0] == '\0') return NULL;
+	if (line == NULL || line[0] == '\n') return NULL;
 	int size = strlen(line);
 	char** tab = (char**) malloc(sizeof(char*) * 3);
 
@@ -90,7 +90,7 @@ flechie* get_split(char* line){
 	int change = 0, index = 0;
 	for(int i=0; i<size; i++){
 		if(line[i] != '\t') {
-			index++;
+			index++; // including the last null char
 			char* temp = realloc(tab[change], index+1);
 			if (temp == NULL) printf("bug get_split");
 			else tab[change] = temp;
@@ -193,7 +193,14 @@ void edit_tree(trees T, char* line) {
 	else if (strcmp(pf->tab_cara[0], "Pro") == 0) ptr = T.tree_pro;
 	else if (strcmp(pf->tab_cara[0], "Det") == 0) ptr = T.tree_det;
 	else if (strcmp(pf->tab_cara[0], "Pre") == 0) ptr = T.tree_pre;
-	else return;
+	else if (strcmp(pf->tab_cara[0], "Int") == 0) ptr = T.tree_int;
+	else if (strcmp(pf->tab_cara[0], "Con") == 0) ptr = T.tree_con;
+	else if (strcmp(pf->tab_cara[0], "QPro") == 0) ptr = T.tree_qpro;
+	else {
+		// if (strcmp(pf->tab_cara[0], "Abr") == 0) return;
+		// if (strcmp(pf->tab_cara[0], "Conj") == 0) return;
+		return;
+	}
 
 	int size = strlen(pf->baseword);
 	for (int i = 0; i < size; i++) {
@@ -212,16 +219,22 @@ void edit_tree(trees T, char* line) {
 p_node* search_word(trees T, char* search, int* size) {
 	int temp_size = 0;
 	int length = strlen(search);
-	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * 4);
+	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * NB_TREES);
 
 	tab_t[0] = T.tree_adj;
-	tab_t[1] = T.tree_nom; 
-	tab_t[2] = T.tree_ver; 
+	tab_t[1] = T.tree_nom;
+	tab_t[2] = T.tree_ver;
 	tab_t[3] = T.tree_adv;
+	tab_t[4] = T.tree_pro;
+	tab_t[5] = T.tree_pre;
+	tab_t[6] = T.tree_det;
+	tab_t[7] = T.tree_int;
+	tab_t[8] = T.tree_con;
+	tab_t[9] = T.tree_qpro;
 
 	p_node* res = NULL;
 	p_node ptr;
-	for (int i_tree=0; i_tree<4; i_tree++) {
+	for (int i_tree=0; i_tree<NB_TREES; i_tree++) {
 		int found = 1;
 		ptr = tab_t[i_tree];
 		for (int depth=0; depth<length; depth++) {
@@ -231,6 +244,7 @@ p_node* search_word(trees T, char* search, int* size) {
 				break;
 			}
 		}
+		if (ptr != NULL && ptr->n_flechies == 0) found = 0;
 		if (found == 1) {
 			(temp_size)++;
 			if(res == NULL) res = (p_node*) malloc(sizeof(p_node));
@@ -246,27 +260,27 @@ p_node* search_word(trees T, char* search, int* size) {
 }
 
 int is_alphabet_empty(p_node* alphabet) {
-	for (int i=0; i<26; ++i) {
+	for (int i=0; i<28; ++i) {
 		if (alphabet[i] != NULL) return 0;
 	}
 	return 1;
 }
 
 p_node random_word(tree t) {
-	if (t == NULL) return NULL;
-	// arbre supposé non nul
+	if (t == NULL || is_alphabet_empty(t->alphabet) == 1) {
+		printf("cannot find a random word in empty tree\n");
+		return NULL;
+		}
 
 	p_node temp = t;
 	int a = 0, r = 0, found = 0;
 	while (found == 0) {
-		r = rand() % 26;
-		while (temp->alphabet[r] == NULL) {
-			r = rand() % 26;
-		}
+		r = rand() % 28;
+		while (temp->alphabet[r] == NULL) r = rand() % 28;
 		temp = temp->alphabet[r];
 		if (temp->n_flechies > 0) {
 			a = rand() % 2;
-			if (a == 0 || (a == 1 && is_alphabet_empty(temp->alphabet) == 1)) found = 1;
+			if (a > 0 || (a == 0 && is_alphabet_empty(temp->alphabet) == 1)) found = 1;
 		}
 	}
 

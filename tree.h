@@ -8,6 +8,7 @@
 #include "file.h"
 
 #define SIZE 10
+#define NB_TREES 10
 
 typedef struct s_flechie {
 	char *word;
@@ -33,6 +34,9 @@ typedef struct s_trees {
 	tree tree_pro;
 	tree tree_pre;
 	tree tree_det;
+	tree tree_int;
+	tree tree_con;
+	tree tree_qpro;
 } trees;
 
 typedef struct {

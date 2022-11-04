@@ -4,7 +4,7 @@
 #include "file.h"
 
 #define LINE 300000
-#define COL 100 
+#define COL 200 
  
 char** read_file(char* fileName, int* tot){
 	char** line = (char**) malloc(sizeof(char*)*LINE);
@@ -16,9 +16,10 @@ char** read_file(char* fileName, int* tot){
     *tot = 0;
 
 	fptr = fopen(fileName, "r");
-    while(fgets(line[i], COL, fptr)) 
-	{
-        line[i][strlen(line[i]) - 1] = '\0';
+    while(fgets(line[i], COL, fptr)) {
+        int j = strlen(line[i]);
+        if (line[i][j - 1] == '\n') line[i][j - 1] = '\0';
+        else line[i][j] = '\0';
         i++;
     }
     *tot = i;
