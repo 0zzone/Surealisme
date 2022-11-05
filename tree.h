@@ -62,5 +62,7 @@ void edit_tree(trees T, char* line);
 p_node* search_word(trees, char*, int*);
 p_node random_word(tree t);
 int is_alphabet_empty(p_node* alphabet);
+flechie** search_flechie(trees T, char* search, int* size_res);
+void display_flechie(flechie* fl);
 
 #endif

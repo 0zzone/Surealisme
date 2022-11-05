@@ -248,7 +248,7 @@ p_node* search_word(trees T, char* search, int* size) {
 		if (found == 1) {
 			(temp_size)++;
 			if(res == NULL) res = (p_node*) malloc(sizeof(p_node));
-			else res = realloc(res, temp_size);
+			else res = realloc(res, temp_size * sizeof(p_node));
 			res[temp_size - 1] = ptr;
 		}
 	}
@@ -285,4 +285,101 @@ p_node random_word(tree t) {
 	}
 
 	return temp;
+}
+
+void display_flechie(flechie* fl) {
+	if (fl == NULL) return;
+
+	int s_cara = fl->n_cara;
+	if (strcmp(fl->tab_cara[0], "Ver") == 0){
+		if ((int) s_cara / 3 == 0) printf("%s : %s %s, temps %s\n", fl->word, fl->baseword, fl->tab_cara[0], fl->tab_cara[1]);
+		else for (int i_cara=0; i_cara < (int) s_cara / 3; i_cara++){
+			printf("%s : %s %s, temps %s, %s %s\n", 
+				fl->word, 
+				fl->tab_cara[0],
+				fl->baseword, 
+				fl->tab_cara[(i_cara * 3) + 1], 
+				fl->tab_cara[(i_cara * 3 + 2) + 1], 
+				fl->tab_cara[(i_cara * 3 + 1) + 1]
+			);
+		}
+	}
+	else if (strcmp(fl->tab_cara[0], "Adj") == 0 || strcmp(fl->tab_cara[0], "Nom") == 0 || strcmp(fl->tab_cara[0], "Det") == 0) {
+		for (int i_cara=0; i_cara < (int) s_cara / 2; i_cara++){
+			printf("%s : %s %s, %s %s\n", 
+				fl->word, 
+				fl->tab_cara[0],
+				fl->baseword, 
+				fl->tab_cara[(i_cara * 2) + 1], 
+				fl->tab_cara[(i_cara * 2 + 1) + 1]
+			);
+		}
+	}
+	else printf("%s : %s %s\n", 
+			fl->word,
+			fl->tab_cara[0],
+			fl->baseword
+		);
+}
+
+
+
+p_node verif_flechies(p_node pn, char* search, int* ind_fl_res) {
+	if (pn == NULL || pn->n_flechies == 0) return NULL;
+	for (int ind=0; ind < pn->n_flechies; ++ind) {
+		if (strcmp(search, pn->tab[ind]->word) == 0) {
+			*ind_fl_res = ind;
+			return pn;
+		}
+	}
+	return NULL;
+}
+
+p_node find_flechie_res(p_node cur, char* search, int* ind_fl_res) {
+	if (cur == NULL || is_alphabet_empty(cur->alphabet) == 1) return cur;
+	p_node res = NULL;
+	if (cur->n_flechies > 0) res = verif_flechies(cur, search, ind_fl_res);
+	if (res != NULL) return res;
+
+	for (int letter=0; letter < 28; letter++) {
+		p_node temp = NULL;
+		if (cur->alphabet[letter] == NULL) continue;
+		temp = find_flechie_res(cur->alphabet[letter], search, ind_fl_res);
+		res = verif_flechies(temp, search, ind_fl_res);
+		if (res != NULL) return res;
+	}
+
+	return NULL;
+}
+
+flechie** search_flechie(trees T, char* search, int* size_res) {
+	int temp_size = 0;
+	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * NB_TREES);
+
+	tab_t[0] = T.tree_adj;
+	tab_t[1] = T.tree_nom;
+	tab_t[2] = T.tree_ver;
+	tab_t[3] = T.tree_adv;
+	tab_t[4] = T.tree_pro;
+	tab_t[5] = T.tree_pre;
+	tab_t[6] = T.tree_det;
+	tab_t[7] = T.tree_int;
+	tab_t[8] = T.tree_con;
+	tab_t[9] = T.tree_qpro;
+
+	flechie** res = NULL;
+	for (int i_tree=0; i_tree<NB_TREES; i_tree++) {
+		int ind_fl = -1;
+		p_node ptr = find_flechie_res(tab_t[i_tree], search, &ind_fl);
+		if (ptr != NULL) {
+			(temp_size)++;
+			if(res == NULL) res = realloc(res, temp_size * sizeof(flechie*));
+			res[temp_size - 1] = ptr->tab[ind_fl];
+		}
+	}
+
+	free(tab_t);
+	if (size_res != NULL) *size_res = temp_size;
+
+	return res;
 }

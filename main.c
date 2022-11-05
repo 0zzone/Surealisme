@@ -23,9 +23,16 @@ int main(){
 
 	for (int i=0; i < size; ++i) edit_tree(T, file[i]);
 
-	char* phrase = generate_flechie(T);
-	printf("%s ", phrase);
+	char* phrase = generate_base(T);
+	printf("%s\n", phrase);
+	int t = -1;
 
+	flechie** res = search_flechie(T, "mange", &t);
+	if (res != NULL){
+		for (int i=0; i<t; ++i) display_flechie(res[i]);
+		free(res);
+	}
+	free(phrase);
 	free_file(file);
 	free_all(T);
 
