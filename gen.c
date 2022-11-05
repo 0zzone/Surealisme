@@ -23,7 +23,10 @@ p_node* generate_nodes(trees T, int* size) {
             printf("cannot find the word 'qui'\n");
             res[index++] = NULL;
         }
-		else res[index++] = search_word(T, "qui", NULL)[0];
+		else {
+			res[index++] = temp[0];
+			free(temp);
+		}
 		res[index++] = random_word(T.tree_ver);
 		res[index++] = random_word(T.tree_ver);
 		res[index++] = random_word(T.tree_nom);

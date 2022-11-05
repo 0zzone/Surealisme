@@ -1,5 +1,15 @@
 #include "tree.h"
 
+void free_flechie(flechie* fl) {
+	free(fl->baseword);
+	free(fl->word);
+	if (fl->tab_cara != NULL){
+		for (int cara=0; cara < fl->n_cara; ++cara) free(fl->tab_cara[cara]);
+		free(fl->tab_cara);
+	}
+	free(fl);
+}
+
 void free_tree(p_node tree) {
 	if (tree == NULL) return;
 	if (tree->alphabet != NULL) {
@@ -7,14 +17,7 @@ void free_tree(p_node tree) {
 		free(tree->alphabet);
 	}
 	for (int flechi=0; flechi<tree->n_flechies; ++flechi) {
-		flechie* temp = tree->tab[flechi];
-		free(temp->baseword);
-		free(temp->word);
-		if (temp->tab_cara != NULL){
-			for (int cara=0; cara < temp->n_cara; ++cara) free(temp->tab_cara[cara]);
-			free(temp->tab_cara);
-		}
-		free(temp);
+		free_flechie(tree->tab[flechi]);
 	}
 	free(tree->tab);
 	free(tree);
@@ -22,13 +25,19 @@ void free_tree(p_node tree) {
 }
 
 void free_all(trees T) {
-	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * 4);
+	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * NB_TREES);
 	tab_t[0] = T.tree_adj;
-	tab_t[1] = T.tree_nom; 
-	tab_t[2] = T.tree_ver; 
+	tab_t[1] = T.tree_nom;
+	tab_t[2] = T.tree_ver;
 	tab_t[3] = T.tree_adv;
+	tab_t[4] = T.tree_pro;
+	tab_t[5] = T.tree_pre;
+	tab_t[6] = T.tree_det;
+	tab_t[7] = T.tree_int;
+	tab_t[8] = T.tree_con;
+	tab_t[9] = T.tree_qpro;
 
-	for (int i=0; i<4; ++i) free_tree(tab_t[i]);
+	for (int i=0; i < NB_TREES; ++i) free_tree(tab_t[i]);
 	free(tab_t);
 }
 
@@ -199,6 +208,7 @@ void edit_tree(trees T, char* line) {
 	else {
 		// if (strcmp(pf->tab_cara[0], "Abr") == 0) return;
 		// if (strcmp(pf->tab_cara[0], "Conj") == 0) return;
+		free_flechie(pf);
 		return;
 	}
 
