@@ -27,7 +27,7 @@ int main(){
 	printf("%s\n", phrase);
 	int t = -1;
 
-	flechie** res = search_flechie(T, "mange", &t);
+	flechie** res = search_flechie(T, "belle", &t);
 	if (res != NULL){
 		for (int i=0; i<t; ++i) display_flechie(res[i]);
 		free(res);

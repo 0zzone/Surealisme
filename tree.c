@@ -324,36 +324,40 @@ void display_flechie(flechie* fl) {
 
 
 
-p_node verif_flechies(p_node pn, char* search, int* ind_fl_res) {
+p_node verif_flechies(p_node pn, char* search, int* i_cara) {
 	if (pn == NULL || pn->n_flechies == 0) return NULL;
 	for (int ind=0; ind < pn->n_flechies; ++ind) {
 		if (strcmp(search, pn->tab[ind]->word) == 0) {
-			*ind_fl_res = ind;
+			*i_cara = ind;
 			return pn;
 		}
 	}
 	return NULL;
 }
 
-p_node find_flechie_res(p_node cur, char* search, int* ind_fl_res) {
-	if (cur == NULL || is_alphabet_empty(cur->alphabet) == 1) return cur;
-	p_node res = NULL;
-	if (cur->n_flechies > 0) res = verif_flechies(cur, search, ind_fl_res);
-	if (res != NULL) return res;
-
-	for (int letter=0; letter < 28; letter++) {
-		p_node temp = NULL;
-		if (cur->alphabet[letter] == NULL) continue;
-		temp = find_flechie_res(cur->alphabet[letter], search, ind_fl_res);
-		res = verif_flechies(temp, search, ind_fl_res);
-		if (res != NULL) return res;
+void find_flechie_res(p_node cur, char* search, flechie** res, int* size_res) {
+	// res perd ses valeurs dans cette fonction 
+	if (cur == NULL) return;
+	int i_cara = -1;
+	p_node temp = verif_flechies(cur, search, &i_cara);
+	if (temp != NULL) {
+		(*size_res)++;
+		if (res == NULL) res = (flechie**) malloc(sizeof(flechie*));
+		else res = realloc(res, (*size_res) * sizeof(flechie*));
+		res[(*size_res) - 1] = temp->tab[i_cara];
 	}
 
-	return NULL;
+	for (int letter=0; letter < 28; letter++) {
+		if (cur->alphabet[letter] == NULL) continue;
+
+		find_flechie_res(cur->alphabet[letter], search, res, size_res);
+	}
+
+	return;
 }
 
 flechie** search_flechie(trees T, char* search, int* size_res) {
-	int temp_size = 0;
+	*size_res = 0;
 	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * NB_TREES);
 
 	tab_t[0] = T.tree_adj;
@@ -367,19 +371,13 @@ flechie** search_flechie(trees T, char* search, int* size_res) {
 	tab_t[8] = T.tree_con;
 	tab_t[9] = T.tree_qpro;
 
-	flechie** res = NULL;
+	flechie** res;
 	for (int i_tree=0; i_tree<NB_TREES; i_tree++) {
-		int ind_fl = -1;
-		p_node ptr = find_flechie_res(tab_t[i_tree], search, &ind_fl);
-		if (ptr != NULL) {
-			(temp_size)++;
-			if(res == NULL) res = realloc(res, temp_size * sizeof(flechie*));
-			res[temp_size - 1] = ptr->tab[ind_fl];
-		}
+		res = NULL;
+		find_flechie_res(tab_t[i_tree], search, res, size_res);
 	}
 
 	free(tab_t);
-	if (size_res != NULL) *size_res = temp_size;
 
 	return res;
 }
