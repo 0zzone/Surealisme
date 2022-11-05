@@ -335,16 +335,15 @@ p_node verif_flechies(p_node pn, char* search, int* i_cara) {
 	return NULL;
 }
 
-void find_flechie_res(p_node cur, char* search, flechie** res, int* size_res) {
-	// res perd ses valeurs dans cette fonction 
+void find_flechie_res(p_node cur, char* search, flechie*** res, int* size_res) { 
 	if (cur == NULL) return;
 	int i_cara = -1;
 	p_node temp = verif_flechies(cur, search, &i_cara);
 	if (temp != NULL) {
 		(*size_res)++;
-		if (res == NULL) res = (flechie**) malloc(sizeof(flechie*));
-		else res = realloc(res, (*size_res) * sizeof(flechie*));
-		res[(*size_res) - 1] = temp->tab[i_cara];
+		if (res == NULL) *res = (flechie**) malloc(sizeof(flechie*));
+		else *res = realloc(*res, (*size_res) * sizeof(flechie*));
+		(*res)[(*size_res) - 1] = temp->tab[i_cara];
 	}
 
 	for (int letter=0; letter < 28; letter++) {
@@ -371,10 +370,9 @@ flechie** search_flechie(trees T, char* search, int* size_res) {
 	tab_t[8] = T.tree_con;
 	tab_t[9] = T.tree_qpro;
 
-	flechie** res;
+	flechie** res = NULL;
 	for (int i_tree=0; i_tree<NB_TREES; i_tree++) {
-		res = NULL;
-		find_flechie_res(tab_t[i_tree], search, res, size_res);
+		find_flechie_res(tab_t[i_tree], search, &res, size_res);
 	}
 
 	free(tab_t);
