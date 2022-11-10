@@ -16,7 +16,6 @@ int main(){
 	T.tree_pre = init_tree();
 	T.tree_int = init_tree();
 	T.tree_con = init_tree();
- 	T.tree_qpro = init_tree();
 	
 	int size;
 	char** file = read_file("dictionnaire_non_accentue.txt", &size);
@@ -27,7 +26,7 @@ int main(){
 	printf("%s\n", phrase);
 	int t = -1;
 
-	flechie** res = search_flechie(T, "belle", &t);
+	flechi** res = search_flechie(T, "belle", &t);
 	if (res != NULL){
 		for (int i=0; i<t; ++i) display_flechie(res[i]);
 		free(res);
