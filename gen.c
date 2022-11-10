@@ -1,37 +1,69 @@
 #include "gen.h"
 
 p_node* gen_phrase_nodes(trees T, int* size) {
-	int model = rand() % 2;
-	int l = 0, index = 0;
+	int model = rand() % 3;
+	int l, index = 0;
 	p_node* res = NULL;
-	if(model == 0){
-		l = 4;
-		res = (p_node*) malloc(sizeof(p_node*) * l);
+	p_node* temp = NULL;
+	switch (model){
+		case 0: // nom – adjectif – verbe – nom
+			l = 4;
+			res = (p_node*) malloc(sizeof(p_node*) * l);
 
-		res[index++] = random_word(T.tree_nom);
-		res[index++] = random_word(T.tree_adj);
-		res[index++] = random_word(T.tree_ver);
-		res[index++] = random_word(T.tree_nom);
-	}
-	else{
-		l=6;
-		res = (p_node*) malloc(sizeof(p_node) * l);
+			res[index++] = random_word(T.tree_nom);
+			res[index++] = random_word(T.tree_adj);
+			res[index++] = random_word(T.tree_ver);
+			res[index++] = random_word(T.tree_nom);
+			break;
 
-		res[index++] = random_word(T.tree_nom);
-        p_node* temp = search_word(T, "qui", NULL);
-        if (temp == NULL) {
-            printf("cannot find the word 'qui'\n");
-            res[index++] = NULL;
-        }
-		else {
-			res[index++] = temp[0];
-			free(temp);
+		case 1: // nom – ‘qui’ – verbe – verbe – nom – adjectif
+			l = 6;
+			res = (p_node*) malloc(sizeof(p_node) * l);
+
+			res[index++] = random_word(T.tree_nom);
+			temp = search_word(T, "qui", NULL);
+			if (temp != NULL) {
+				res[index++] = temp[0];
+				free(temp);
+			} else {
+				printf("cannot find the word 'qui'\n");
+				res[index++] = NULL;
+			}
+			res[index++] = random_word(T.tree_ver);
+			res[index++] = random_word(T.tree_ver);
+			res[index++] = random_word(T.tree_nom);
+			res[index++] = random_word(T.tree_adj);
+			break;
+
+		case 2: // interjection – nom – adverbe – adjectif – verbe – interjection – adjectif – nom – adjectif – 'et' – adverbe – adjectif 
+			l = 12;
+			res = (p_node*) malloc(sizeof(p_node) * l);
+
+			res[index++] = random_word(T.tree_int);
+			res[index++] = random_word(T.tree_nom);
+			res[index++] = random_word(T.tree_adv);
+			res[index++] = random_word(T.tree_adj);
+			res[index++] = random_word(T.tree_ver);
+			res[index++] = random_word(T.tree_int);
+			res[index++] = random_word(T.tree_adj);
+			res[index++] = random_word(T.tree_nom);
+			res[index++] = random_word(T.tree_adj);
+			temp = search_word(T, "et", NULL);
+			if (temp != NULL) {
+				res[index++] = temp[0];
+				free(temp);
+			} else {
+				printf("cannot find the word 'et'\n");
+				res[index++] = NULL;
+			}
+
+			res[index++] = random_word(T.tree_adv);
+			res[index++] = random_word(T.tree_adj);
+			break;
+
+		default:
+			break;
 		}
-		res[index++] = random_word(T.tree_ver);
-		res[index++] = random_word(T.tree_ver);
-		res[index++] = random_word(T.tree_nom);
-		res[index++] = random_word(T.tree_adj);
-	}
 	*size = index;
 	return res;
 }
@@ -171,7 +203,7 @@ char* gen_phrase_flechie(trees T){
 			    tab_flechies[index] = temp;
             
 		}
-		else { // préposition ou pronom
+		else { // préposition ou pronom indéfini ou interjection
 			tab_flechies[index] = nodes[i]->tab_flechis[0]->word;
 		}
     index++;
