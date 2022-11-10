@@ -46,12 +46,6 @@ void display_carac(char** c){
 	}
 }
 
-void display_struct(flechi f){
-	printf("Mot de base : %s\n", f.baseword);
-	printf("Mot fléchi : %s\n", f.word);
-	display_carac(f.tab_caracteristics);
-}
-
 p_node sample_tree() {
 	p_node stree = create_node(0);
 	stree->alphabet[0] = create_node('a');
