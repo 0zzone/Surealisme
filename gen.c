@@ -1,6 +1,6 @@
 #include "gen.h"
 
-p_node* generate_nodes(trees T, int* size) {
+p_node* gen_phrase_nodes(trees T, int* size) {
 	int model = rand() % 2;
 	int l = 0, index = 0;
 	p_node* res = NULL;
@@ -75,9 +75,9 @@ char* find_flechie_verb(p_node pn, char temps, int genre, int pers) {
 	return NULL;
 }
 
-char* generate_base(trees T) {
+char* gen_phrase_base(trees T) {
 	int size_tnode = 0;
-	p_node* nodes = generate_nodes(T, &size_tnode);
+	p_node* nodes = gen_phrase_nodes(T, &size_tnode);
 	int size_fl = size_tnode;
 	char** tab_flechies = malloc(sizeof(char*) * size_fl);
 
@@ -102,9 +102,9 @@ char* generate_base(trees T) {
 }
 
 
-char* generate_flechie(trees T){
+char* gen_phrase_flechie(trees T){
 	int size_tnode = 0;
-	p_node* nodes = generate_nodes(T, &size_tnode);
+	p_node* nodes = gen_phrase_nodes(T, &size_tnode);
 	int index = 0;
 	int size_fl = size_tnode;
 	char** tab_flechies = malloc(sizeof(char*) * size_fl);

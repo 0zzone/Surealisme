@@ -171,6 +171,20 @@ node* create_node(char letter) {
 	return pn;
 }
 
+trees init_trees() {
+	trees T;
+	T.tree_adj = init_tree();
+	T.tree_adv = init_tree();
+	T.tree_nom = init_tree();
+	T.tree_ver = init_tree();
+	T.tree_pro = init_tree();
+	T.tree_det = init_tree();
+	T.tree_pre = init_tree();
+	T.tree_int = init_tree();
+	T.tree_con = init_tree();
+	return T;
+}
+
 p_node init_tree() {
 	p_node tree = create_node(0);
 	return tree;

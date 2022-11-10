@@ -54,6 +54,7 @@ void display_struct(flechi);
 void display_carac(char**);
 
 node* create_node(char);
+trees init_trees();
 p_node init_tree();
 int get_index(char prompt);
 void edit_tree(trees T, char* line);
