@@ -132,6 +132,11 @@ int is_alphabet_empty(p_node* alphabet);
 flechi** search_flechie(trees T, char* search, int* size_res);
 
 /**
+ * Displays p_node elements.
+*/
+void display_node(p_node pn);
+
+/**
  * Displays the flechi elements. 
 */
 void display_flechie(flechi* fl);

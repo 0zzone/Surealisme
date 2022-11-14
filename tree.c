@@ -393,3 +393,7 @@ flechi** search_flechie(trees T, char* search, int* size_res) {
 
 	return res;
 }
+
+void display_node(p_node pn) {
+	printf("Pointer[@] -> Node {letter: '%c', tab_flechis: Pointer[@] -> }")
+}
