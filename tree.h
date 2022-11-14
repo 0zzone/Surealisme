@@ -8,6 +8,7 @@
 #include "file.h"
 
 #define SIZE 10
+#define ALPHABET_SIZE 28
 #define NB_TREES 9
 
 /**

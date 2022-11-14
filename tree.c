@@ -13,7 +13,7 @@ void free_flechie(flechi* fl) {
 void free_tree(p_node tree) {
 	if (tree == NULL) return;
 	if (tree->alphabet != NULL) {
-		for (int i=0; i<28; ++i) if (tree->alphabet[i] != NULL) free_tree(tree->alphabet[i]);
+		for (int i=0; i<ALPHABET_SIZE; ++i) if (tree->alphabet[i] != NULL) free_tree(tree->alphabet[i]);
 		free(tree->alphabet);
 	}
 	for (int flechi=0; flechi<tree->nb_flechis; ++flechi) {
@@ -157,8 +157,8 @@ char** get_split_carac(char* set_char, int* n_tab){
 
 node* create_node(char letter) {
 	p_node pn = (p_node) malloc(sizeof(node));
-	pn->alphabet = (p_node*) malloc(sizeof(p_node) * 28);
-	for (int i=0; i<28; ++i) pn->alphabet[i] = NULL;
+	pn->alphabet = (p_node*) malloc(sizeof(p_node) * ALPHABET_SIZE);
+	for (int i=0; i<ALPHABET_SIZE; ++i) pn->alphabet[i] = NULL;
 	pn->letter = letter;
 	pn->nb_flechis = 0;
 	pn->tab_flechis = NULL;
@@ -275,7 +275,7 @@ p_node* search_word(trees T, char* search, int* size) {
 }
 
 int is_alphabet_empty(p_node* alphabet) {
-	for (int i=0; i<28; ++i) {
+	for (int i=0; i<ALPHABET_SIZE; ++i) {
 		if (alphabet[i] != NULL) return 0;
 	}
 	return 1;
@@ -290,8 +290,8 @@ p_node random_word(tree t) {
 	p_node temp = t;
 	int a = 0, r = 0, found = 0;
 	while (found == 0) {
-		r = rand() % 28;
-		while (temp->alphabet[r] == NULL) r = rand() % 28;
+		r = rand() % ALPHABET_SIZE;
+		while (temp->alphabet[r] == NULL) r = rand() % ALPHABET_SIZE;
 		temp = temp->alphabet[r];
 		if (temp->nb_flechis > 0) {
 			a = rand() % 2;
@@ -361,7 +361,7 @@ void find_flechie_res(p_node cur, char* search, flechi*** res, int* size_res) {
 		(*res)[(*size_res) - 1] = temp->tab_flechis[i_cara];
 	}
 
-	for (int letter=0; letter < 28; letter++) {
+	for (int letter=0; letter < ALPHABET_SIZE; letter++) {
 		if (cur->alphabet[letter] == NULL) continue;
 
 		find_flechie_res(cur->alphabet[letter], search, res, size_res);
@@ -395,5 +395,9 @@ flechi** search_flechie(trees T, char* search, int* size_res) {
 }
 
 void display_node(p_node pn) {
-	printf("Pointer[@] -> Node {letter: '%c', tab_flechis: Pointer[@] -> }")
+	printf("Pointer[@] -> Node {letter: '%c', tab_flechis: Pointer[@] -> %p (size: %d), alphabet: [", pn->letter, (void*) pn->tab_flechis, pn->nb_flechis);
+	for (int i=0; i<ALPHABET_SIZE; ++i) {
+		if (pn->alphabet[i] != NULL) printf("[@] -> Node {'%c'}; ", pn->alphabet[i]->letter);
+	}
+	printf("]\n");
 }

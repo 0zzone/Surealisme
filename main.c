@@ -14,18 +14,19 @@ int main(){
 
 	char search[20];
 	int t;
+	char* phrase;
 
 	int end = 1;
 	do {	
 		int prompt;
-		printf("0) Leave \n1) Generate a complete sentence \n2) Search with flechi words \n 3) Other");
+		printf("0) Leave \n1) Generate a complete sentence \n2) Search with flechi words \n3) Other \n");
 		scanf("%d", &prompt);
 		switch (prompt) {
 			case 0:
 				end = 0;
 				break;
 			case 1:
-				char* phrase = gen_phrase_flechie(T);
+				phrase = gen_phrase_flechie(T);
 				printf("%s\n", phrase);
 				free(phrase);
 				break;
@@ -41,7 +42,7 @@ int main(){
 				else printf("No results found\n");
 				break;
 			case 3:
-				printf("0) Back to main menu \n1) Search with base words \n2) Random search \n 3) ");
+				printf("0) Back to main menu \n1) Search with base words \n2) Random search into noun tree\n 3) Generate a sentence with base words \n");
 				scanf("%d", &prompt);
 				switch (prompt) {
 					case 0:
@@ -50,18 +51,27 @@ int main(){
 						printf("search:\t");
 						scanf("%s", search);
 						
-						p_node res_pn = search_word(T, search, &t);
+						p_node* res_pn = search_word(T, search, &t);
 						if (res_pn != NULL){
-							for (int i=0; i<t; ++i) display_flechie(res_pn[i]);
+							for (int i=0; i<t; ++i) display_node(res_pn[i]);
 							free(res_pn);
 						}
 						else printf("No results found\n");
+						break;
+					case 2:
+						display_node(random_word(T.tree_nom));
+						break;
+					case 3:
+						phrase = gen_phrase_base(T);
+						printf("%s\n", phrase);
+						free(phrase);
+						break;
+					default:
 						break;
 				}
 			default:
 				break;
 		}
-
 	} while (end == 0);
 
 	free_file(file);
