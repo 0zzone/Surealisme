@@ -144,7 +144,7 @@ int get_random_genrenumber_from_noun(p_node pn, int* genre, int* number) {
 
 /**
  * Makes a string from an array of strings.
- * Does not de-allocates the array, nor the strings.
+ * Does not de-allocate the array, nor the strings.
 */
 char* transform_from_array(char** array, int size_array) {
 	char* res = NULL;
