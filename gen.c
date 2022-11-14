@@ -70,16 +70,18 @@ p_node* gen_phrase_nodes(trees T, int* size) {
 
 char* find_flechie_genrenumber(p_node pn, int gender, int number) {
 	// model: [Nom, Mas, SG, Fem, PL]
-	char* tab_gender[] = {"SG", "PL", "InvPL"};
-	char* tab_number[] = {"Mas", "Fem", "InvGen"};
+	char* tab_gender[] = {"Mas", "Fem", "InvGen"};
+	char* tab_number[] = {"SG", "PL", "InvPL"};
 	flechi** tab = pn->tab_flechis;
 	
 	for (int i=0; i < pn->nb_flechis; ++i) {
 		for (int i_cara=0; i_cara < (int) tab[i]->nb_cara / 2; ++i_cara) {
-			int cond_type = (strcmp(tab[i]->tab_caracteristics[i_cara * 2 + 1], tab_number[gender]) == 0 ||
-			strcmp(tab[i]->tab_caracteristics[i_cara * 2 + 1], tab_number[2]) == 0);
-			int cond_genre = strcmp(tab[i]->tab_caracteristics[i_cara * 2 + 2], tab_gender[number]) == 0 ||
-			strcmp(tab[i]->tab_caracteristics[i_cara * 2 + 2], tab_gender[2]) == 0;
+			int cond_genre = (gender == 2 ||
+				strcmp(tab[i]->tab_caracteristics[i_cara * 2 + 1], tab_gender[gender]) == 0 ||
+				strcmp(tab[i]->tab_caracteristics[i_cara * 2 + 1], tab_gender[2]) == 0);
+			int cond_type = (number == 2 ||
+				strcmp(tab[i]->tab_caracteristics[i_cara * 2 + 2], tab_number[number]) == 0 ||
+				strcmp(tab[i]->tab_caracteristics[i_cara * 2 + 2], tab_number[2]) == 0);
 
 			if (cond_type && cond_genre) {
 				return tab[i]->word;
@@ -98,7 +100,7 @@ char* find_flechie_verb(p_node pn, char temps, int gender, int pers) {
 	for (int i=0; i < pn->nb_flechis; ++i) {
 		for (int i_cara=0; i_cara < (int) tab[i]->nb_cara / 3; ++i_cara) {
 			int cond_temps = (tab[i]->tab_caracteristics[(i_cara * 3) + 1])[0] == temps;
-            int cond_genre = (strcmp(tab[i]->tab_caracteristics[(i_cara * 3 + 1) + 1], tab_gender[gender]) == 0 || strcmp(tab[i]->tab_caracteristics[(i_cara * 3 + 1) + 1], tab_gender[2]) == 0);
+            int cond_genre = (gender == 2 || strcmp(tab[i]->tab_caracteristics[(i_cara * 3 + 1) + 1], tab_gender[gender]) == 0 || strcmp(tab[i]->tab_caracteristics[(i_cara * 3 + 1) + 1], tab_gender[2]) == 0);
 			int cond_pers = strcmp(tab[i]->tab_caracteristics[(i_cara * 3 + 2) + 1], tab_pers[pers]) == 0;
 
 			if (cond_temps && cond_genre && cond_pers) return tab[i]->word;
@@ -106,6 +108,39 @@ char* find_flechie_verb(p_node pn, char temps, int gender, int pers) {
 	}
 	return NULL;
 }
+
+/**
+ * If pn has a noun flechi form, return a random genre and number that pn has.
+ * Returns: 1 if pn has at least a noun flechi form; else 0. 
+*/
+int get_random_genrenumber_from_noun(p_node pn, int* genre, int* number) {
+	int noun_exists = 0;
+	for (int i=0; i < pn->nb_flechis; ++i) if (strcmp(pn->tab_flechis[i]->tab_caracteristics[0], "Nom") == 0) {
+		noun_exists = 1;
+		break;
+	}
+	if (noun_exists == 0) return 0;
+
+	int r; 
+	flechi* temp = NULL;
+	while (1) {
+		r = rand() % pn->nb_flechis;
+		temp = pn->tab_flechis[r];
+		if (strcmp(temp->tab_caracteristics[0], "Nom") != 0) continue;
+
+		r = rand() % (temp->nb_cara - 1) / 2;
+		if (strcmp(temp->tab_caracteristics[2*r + 1], "Mas") == 0) *number = 0;
+		else if (strcmp(temp->tab_caracteristics[2*r + 1], "Fem") == 0) *number = 1;
+		else *number = 2;
+
+		if (strcmp(temp->tab_caracteristics[2*r + 2], "SG") == 0) *genre = 0;
+		else if (strcmp(temp->tab_caracteristics[2*r + 2], "PL") == 0) *genre = 1;
+		else *genre = 2;
+
+		return 1;
+	}
+}
+
 
 /**
  * Makes a string from an array of strings.
@@ -155,18 +190,17 @@ char* gen_phrase_flechie(trees T){
 	for (int i=0; i<size_tnode; ++i) {
         char* temp = NULL;
 		if (strcmp(nodes[i]->tab_flechis[0]->tab_caracteristics[0], "Nom") == 0) {
-			p_node rnd_det = random_word(T.tree_det);
-
-			gender = rand() % 2, number = rand() % 2;
+			get_random_genrenumber_from_noun(nodes[i], &gender, &number);
 			size_fl++;
 
 			// déterminant
+			p_node rnd_det = random_word(T.tree_det);
 			tab_flechies = realloc(tab_flechies, sizeof(char*) * size_fl);
             
             do {
                 temp = find_flechie_genrenumber(rnd_det, gender, number);
 			    if (temp == NULL) {
-				printf("missing flechi form for det %s with gender %d and number %d\n", nodes[i]->tab_flechis[0]->baseword, gender, number);
+				printf("missing flechi form for det %s with gender %d and number %d\n", rnd_det->tab_flechis[0]->baseword, gender, number);
                 rnd_det = random_word(T.tree_det);
                 }
             } while (temp == NULL);
