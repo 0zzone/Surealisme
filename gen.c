@@ -129,13 +129,13 @@ int get_random_genrenumber_from_noun(p_node pn, int* genre, int* number) {
 		if (strcmp(temp->tab_caracteristics[0], "Nom") != 0) continue;
 
 		r = rand() % (temp->nb_cara - 1) / 2;
-		if (strcmp(temp->tab_caracteristics[2*r + 1], "Mas") == 0) *number = 0;
-		else if (strcmp(temp->tab_caracteristics[2*r + 1], "Fem") == 0) *number = 1;
-		else *number = 2;
+		if (strcmp(temp->tab_caracteristics[2*r + 1], "Mas") == 0) *genre = 0;
+		else if (strcmp(temp->tab_caracteristics[2*r + 1], "Fem") == 0) *genre = 1;
+		else *genre = rand() % 2;
 
-		if (strcmp(temp->tab_caracteristics[2*r + 2], "SG") == 0) *genre = 0;
-		else if (strcmp(temp->tab_caracteristics[2*r + 2], "PL") == 0) *genre = 1;
-		else *genre = 2;
+		if (strcmp(temp->tab_caracteristics[2*r + 2], "SG") == 0) *number = 0;
+		else if (strcmp(temp->tab_caracteristics[2*r + 2], "PL") == 0) *number = 1;
+		else *number = rand() % 2;
 
 		return 1;
 	}
@@ -185,7 +185,7 @@ char* gen_phrase_flechie(trees T){
 	int size_fl = size_tnode;
 	char** tab_flechies = malloc(sizeof(char*) * size_fl);
 
-	int gender, number;
+	int gender = rand() % 3, number = rand() % 3;
 
 	for (int i=0; i<size_tnode; ++i) {
         char* temp = NULL;

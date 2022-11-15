@@ -31,7 +31,7 @@ int main(){
 			free(phrase);
 		}
 		else if (prompt == 2) {
-			printf("search:\t");
+			printf("search:");
 			scanf("%s", search);
 
 			flechi** res_fl = search_flechie(T, search, &t);
@@ -45,7 +45,7 @@ int main(){
 			printf("0) Back to main menu \n1) Search with base words \n2) Random search into noun tree\n3) Generate a sentence with base words \n");
 			scanf("%d", &prompt);
 			if (prompt == 1) {
-				printf("search:\t");
+				printf("search:");
 				scanf("%s", search);
 				
 				p_node* res_pn = search_word(T, search, &t);
@@ -62,6 +62,7 @@ int main(){
 				free(phrase);
 			}
 		}
+        printf("\n");
 	} while (end == 0);
 
 	free_file(file);
