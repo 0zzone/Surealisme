@@ -253,7 +253,14 @@ p_node* search_word(trees T, char* search, int* size) {
 		int found = 1;
 		ptr = tab_t[i_tree];
 		for (int depth=0; depth<length; depth++) {
-			ptr = ptr->alphabet[get_index(search[depth])];
+			int ind = get_index(search[depth]);
+			if (!(0 <= ind && ind < ALPHABET_SIZE)) {
+				printf("incorrect character:%c\n", search[depth]);
+				free(tab_t);
+				if (res != NULL) free(res);
+				return NULL;
+			}
+			ptr = ptr->alphabet[ind];
 			if (ptr == NULL) {
 				found = 0;
 				break;
@@ -372,6 +379,13 @@ void find_flechie_res(p_node cur, char* search, flechi*** res, int* size_res) {
 
 flechi** search_flechie(trees T, char* search, int* size_res) {
 	*size_res = 0;
+	for (int i=0; i< (int) strlen(search); ++i) {
+		int ind = get_index(search[i]);
+		if (!(0 <= ind && ind < ALPHABET_SIZE)) {
+			printf("incorrect character: %c\n", search[i]);
+			return NULL;
+		}
+	}
 	p_node* tab_t = (p_node*) malloc(sizeof(p_node) * NB_TREES);
 
 	tab_t[0] = T.tree_adj;
