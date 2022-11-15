@@ -35,8 +35,8 @@ p_node* gen_phrase_nodes(trees T, int* size) {
 			res[index++] = random_word(T.tree_adj);
 			break;
 
-		case 2: // interjection – nom – adverbe – adjectif – verbe – interjection – adjectif – nom – adjectif – 'et' – adverbe – adjectif 
-			l = 12;
+		case 2: // interjection – nom – adverbe – adjectif – verbe – adjectif – nom – adjectif – 'et' – adverbe – adjectif 
+			l = 11;
 			res = (p_node*) malloc(sizeof(p_node) * l);
 
 			res[index++] = random_word(T.tree_int);
@@ -44,7 +44,6 @@ p_node* gen_phrase_nodes(trees T, int* size) {
 			res[index++] = random_word(T.tree_adv);
 			res[index++] = random_word(T.tree_adj);
 			res[index++] = random_word(T.tree_ver);
-			res[index++] = random_word(T.tree_int);
 			res[index++] = random_word(T.tree_adj);
 			res[index++] = random_word(T.tree_nom);
 			res[index++] = random_word(T.tree_adj);

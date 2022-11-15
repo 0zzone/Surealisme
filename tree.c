@@ -307,7 +307,7 @@ void display_flechie(flechi* fl) {
 
 	int s_cara = fl->nb_cara;
 	if (strcmp(fl->tab_caracteristics[0], "Ver") == 0){
-		if ((int) s_cara / 3 == 0) printf("%s : %s %s, temps %s\n", fl->word, fl->baseword, fl->tab_caracteristics[0], fl->tab_caracteristics[1]);
+		if ((int) s_cara / 3 == 0) printf("%s : %s %s, temps %s\n", fl->word, fl->tab_caracteristics[0], fl->baseword, fl->tab_caracteristics[1]);
 		else for (int i_cara=0; i_cara < (int) s_cara / 3; i_cara++){
 			printf("%s : %s %s, temps %s, %s %s\n", 
 				fl->word, 
@@ -395,9 +395,9 @@ flechi** search_flechie(trees T, char* search, int* size_res) {
 }
 
 void display_node(p_node pn) {
-	printf("Pointer[@] -> Node {letter: '%c', tab_flechis: Pointer[@] -> %p (size: %d), alphabet: [", pn->letter, (void*) pn->tab_flechis, pn->nb_flechis);
+	printf("Pointer[@] -> Node {letter: '%c', tab_flechis: Pointer[@ = %p] -> Array of flechi (size: %d), alphabet: [", pn->letter, (void*) pn->tab_flechis, pn->nb_flechis);
 	for (int i=0; i<ALPHABET_SIZE; ++i) {
 		if (pn->alphabet[i] != NULL) printf("[@] -> Node {'%c'}; ", pn->alphabet[i]->letter);
 	}
-	printf("]\n");
+	printf("]}\n");
 }

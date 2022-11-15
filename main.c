@@ -36,6 +36,7 @@ int main(){
 
 			flechi** res_fl = search_flechie(T, search, &t);
 			if (res_fl != NULL){
+				printf("Results:\n");
 				for (int i=0; i<t; ++i) display_flechie(res_fl[i]);
 				free(res_fl);
 			}
@@ -50,6 +51,7 @@ int main(){
 				
 				p_node* res_pn = search_word(T, search, &t);
 				if (res_pn != NULL){
+					printf("Array of p_node:\n");
 					for (int i=0; i<t; ++i) display_node(res_pn[i]);
 					free(res_pn);
 				}
