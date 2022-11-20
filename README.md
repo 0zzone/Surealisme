@@ -1,5 +1,7 @@
 # Surréalisme : Comment utiliser le programme
 ## Préambule
+
+Dans tous les cas, remplacer tous les caractères `ö` (2 occurrences) du dictionnaire non accentué par `o`.
 ### Sur Windows
 Changer le **chemin relatif** du dictionnaire non accentué au main.c:12 (à la ligne 12 de main.c) pour son chemin absolu.
 
